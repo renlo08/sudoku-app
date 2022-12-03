@@ -42,7 +42,7 @@ def fit_model(train_data, train_labels, test_data, test_labels):
     """ Fit SudokuNet """
     # initialize the optimizer and model
     print("[INFO] compiling model...")
-    opt = Adam(lr=INIT_LR)
+    opt = Adam(learning_rate=INIT_LR)
     model = SudokuNet.build(width=28, height=28, depth=1, classes=10)
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
@@ -64,7 +64,7 @@ def fit_model(train_data, train_labels, test_data, test_labels):
 
 
 def load_classifier_model():
-    opt = Adam(lr=INIT_LR)
+    opt = Adam(learning_rate=INIT_LR)
     model = SudokuNet.build(width=28, height=28, depth=1, classes=10)
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
     model.load_weights(MODEL_WEIGHT_PATH)

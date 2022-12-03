@@ -1,3 +1,6 @@
 /.idea
 /.vscode
 /Capture_images.ipynb
+*__pycache__
+/.DS_Store
+**.pyc

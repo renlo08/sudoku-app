@@ -39,7 +39,7 @@ if __name__ == '__main__':
                 # crop the cell from the warped transform image and then
                 # extract the digit from the cell
                 cell = warped[startY:endY, startX:endX]
-                digit = extract_digit(cell, debug=args["debug"] > 0)
+                digit = extract_digit(cell, debug=True)
 
                 # verify that the digit is not empty
                 if digit is not None:
@@ -53,6 +53,7 @@ if __name__ == '__main__':
                     # prediction
                     model = load_classifier_model()
                     pred = model.predict(roi).argmax(axis=1)[0]
+                    print(pred)
                     board[y, x] = pred
             # add the row to our cell locations
             cellLocs.append(row)

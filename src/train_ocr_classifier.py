@@ -1,0 +1,134 @@
+import pathlib
+import tensorflow as tf
+from model.SudokuNet import SudokuNet
+from tf.keras.optimizers import SGD
+from tf.keras.callbacks import EarlyStopping,ModelCheckpoint, ReduceLROnPlateau
+from tf.keras.preprocessing.image import ImageDataGenerator
+from sklearn.preprocessing import LabelBinarizer
+from sklearn.metrics import classification_report
+from Sudoku.search_sudoku_in_image import get_app_dir
+
+
+OCR_DATASET_PATH = get_app_dir() / 'res' / 'data'
+MODEL_WEIGHT_PATH = get_app_dir() / 'res' / 'model_weights.h5'
+MOMENTUM = .9
+EPOCHS = 50
+BS = 32
+IMG_HEIGHT = 28
+IMG_WIDTH = 28
+
+def invert_colors(img):
+    """ invert the color of the image """
+    return 1 - img
+
+def create_train_generator():
+    """ Create a generator containing the training set """
+
+    augmented_image_gen = ImageDataGenerator(
+        preprocessing_function=invert_colors,
+        rescale = 1/255.0,
+        rotation_range=2,
+        width_shift_range=.1,
+        height_shift_range=.1,
+        zoom_range=0.1,
+        shear_range=2,
+        brightness_range=[0.9, 1.1],
+        validation_split=0.2,
+    )
+
+    train_data_gen = augmented_image_gen.flow_from_directory(batch_size=BS,
+                                                        directory=OCR_DATASET_PATH / "training_data",
+                                                        color_mode="grayscale",
+                                                        shuffle=True,
+                                                        target_size=(IMG_HEIGHT, IMG_WIDTH),
+                                                        class_mode="categorical",
+                                                        seed=65657867,
+                                                        subset='training')
+
+    return train_data_gen
+
+def create_validation_generator():
+    """ Create a generator containing the validation set """
+    normal_image_gen = ImageDataGenerator(
+        preprocessing_function=invert_colors,
+        rescale = 1/255.0,
+        validation_split=0.2,
+        )
+
+    val_data_gen = normal_image_gen.flow_from_directory(batch_size=BS,
+                                                        directory=OCR_DATASET_PATH / "testing_data",
+                                                        color_mode="grayscale",
+                                                        shuffle=True,
+                                                        target_size=(IMG_HEIGHT, IMG_WIDTH),
+                                                        class_mode="categorical",
+                                                        seed=65657867,
+                                                        subset='validation')
+    
+    return val_data_gen
+
+def create_callbacks():
+    #Prepare call backs
+    EarlyStop_callback = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
+    checkpoint = ModelCheckpoint(MODEL_WEIGHT_PATH,
+                                monitor = 'val_loss',mode = 'min',save_best_only= True, save_weights_only=True)
+    return [EarlyStop_callback, checkpoint]
+
+def setup_optimizer():
+    lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=0.00001)
+    opt = SGD(lr=lr, momentum=MOMENTUM)
+    return opt
+
+def fit_model(train_data_gen, val_data_gen):
+    """ Fit SudokuNet """
+    # initialize the optimizer and model
+    print("[INFO] compiling model...")
+    opt = setup_optimizer()
+    model = SudokuNet.build(width=IMG_WIDTH, height=IMG_HEIGHT, depth=1, classes=10)
+    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+
+    # define the callbacks
+    my_callback = create_callbacks()
+
+    if pathlib.Path.exists(MODEL_WEIGHT_PATH):
+        model.load_weights(MODEL_WEIGHT_PATH)
+        history = None
+    else:
+        # train the network
+        print("[INFO] training network...")
+        history = model.fit_generator(
+            train_data_gen,
+            steps_per_epoch=train_data_gen.samples // BS,
+            epochs=EPOCHS,
+            validation_data=val_data_gen,
+            validation_steps=val_data_gen.samples // BS,
+            callbacks = my_callback)
+
+        model.save_weights(MODEL_WEIGHT_PATH)
+
+    return history, model
+
+def load_classifier_model():
+    opt = setup_optimizer()
+    model = SudokuNet.build(width=IMG_WIDTH, height=IMG_HEIGHT, depth=1, classes=10)
+    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+    model.load_weights(MODEL_WEIGHT_PATH)
+    return model
+
+def evaluate_model_performance(generator, model):
+    """ Evaluate model """
+    # evaluate the network
+    print("[INFO] evaluating network...")
+    predictions = model.predict(generator)
+    labels = generator.classes
+    print(classification_report(
+        labels.argmax(axis=1),
+        predictions.argmax(axis=1),
+        target_names=[str(x) for x in range(10)]))
+
+if __name__ == '__main__':
+    import sys
+    try:
+        pass
+    except Exception as e:
+        print(e)
+        sys.stdout(e)

@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
 from Sudoku.search_sudoku_in_image import get_app_dir
 
+# dataset from https://www.kaggle.com/datasets/preatcher/standard-ocr-dataset
 
 OCR_DATASET_PATH = get_app_dir() / 'res' / 'data'
 MODEL_WEIGHT_PATH = get_app_dir() / 'res' / 'ocr_model_weights.h5'

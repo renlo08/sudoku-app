@@ -185,6 +185,17 @@ def find_puzzle(file_path, debug=False):
 
     return puzzle, warped
 
+def zoom_on_digit(digit: np.array):
+    """ Recenter the image on digit """
+    # find the 4 points of the ROI
+    x_indexes, y_indexes = np.where(digit == 255)
+    x_min, x_max = np.min(x_indexes), np.max(x_indexes)
+    y_min, y_max = np.min(y_indexes), np.max(y_indexes)
+
+    # slice the array
+    return digit[x_min-1:x_max+1,y_min-1:y_max+1]
+
+
 
 def extract_digit(cell, debug=False):
     # apply automatic thresholding to the cell and then clear any
@@ -220,6 +231,7 @@ def extract_digit(cell, debug=False):
     # apply the mask to the thresholded cell
     digit = cv2.bitwise_and(thresh, thresh, mask=mask)
 
+    digit = zoom_on_digit(digit)
     # check to see if we should visualize the masking step
     if debug:
         cv2.imshow("Digit", digit)

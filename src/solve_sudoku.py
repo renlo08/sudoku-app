@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from tensorflow.keras.preprocessing.image import img_to_array
 from Sudoku.search_sudoku_in_image import find_puzzle, get_app_dir, extract_digit
-from train_digits_classifier import load_classifier_model
+from train_ocr_classifier import load_classifier_model
 
 app_dir = get_app_dir()
 IMAGE_PATH = app_dir / 'Images' / 'sudoku_lolo.jpeg'

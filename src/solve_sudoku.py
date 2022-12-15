@@ -3,9 +3,10 @@ import cv2
 from tensorflow.keras.preprocessing.image import img_to_array
 from Sudoku.search_sudoku_in_image import find_puzzle, get_app_dir, extract_digit
 from train_ocr_classifier import load_classifier_model
+from sudoku import Sudoku
 
 app_dir = get_app_dir()
-IMAGE_PATH = app_dir / 'Images' / 'sudoku_lolo.jpeg'
+IMAGE_PATH = app_dir / 'Images' / 'puzzle_sudoku.jpeg'
 
 if __name__ == '__main__':
     try:
@@ -39,7 +40,7 @@ if __name__ == '__main__':
                 # crop the cell from the warped transform image and then
                 # extract the digit from the cell
                 cell = warped[startY:endY, startX:endX]
-                digit = extract_digit(cell, debug=True)
+                digit = extract_digit(cell, debug=False)
 
                 # verify that the digit is not empty
                 if digit is not None:
@@ -57,6 +58,15 @@ if __name__ == '__main__':
                     board[y, x] = pred
             # add the row to our cell locations
             cellLocs.append(row)
+        
+        # construct a Sudoku puzzle from the board
+        print("[INFO] OCR'd Sudoku board:")
+        puzzle = Sudoku(3, 3, board=board.tolist())
+        puzzle.show()
+        # solve the Sudoku puzzle
+        print("[INFO] solving Sudoku puzzle...")
+        solution = puzzle.solve()
+        solution.show_full()
 
     except Exception as e:
         print(e)

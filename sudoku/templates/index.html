@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div>Cette application propose la solution d´une grille de sudoku à partir d´une photo de cette grille de sudoku.
+    </div>
+    <section>
+        <h1>1. Choisir l´image</h1>
+        <form action="{% url 'app:upload' %}" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.file }}
+            {{ form.errors.as_p }}
+{#                        <label for="uploadImg">Choisir une image:</label>#}
+{#                        <input type="file" id="uploadImg" name="uploadImg" accept="image/png, image/jpeg">#}
+            <button type="submit" value="upload">Analyser</button>
+        </form>
+    </section>
+    <section>
+        <h1>2. Éditer et modifier la grille</h1>
+        {% include 'process.html' %}
+    </section>
+    <section>
+        <h1>3. Calculer la solution</h1>
+    </section>
+
+{% endblock content %}

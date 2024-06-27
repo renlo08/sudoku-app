@@ -9,7 +9,7 @@ urlpatterns = [
 ]
 
 htmx_urlpatterns = [
-    path('upload/', views.upload_view, name='upload'),
+    path('upload/', views.upload_photo_view, name='upload_photo'),
 ]
 
 urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)

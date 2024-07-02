@@ -1,6 +1,6 @@
 <div id="imageProcessing">
-    {% if process_context %}
-        <p>{{ process_context }}</p>
+    {% if image %}
+        <img src="{{ image.photo.url }}" alt="img" width="200" height="250">
     {% else %}
         <p>Aucune image chargé pour le moment</p>
     {% endif %}

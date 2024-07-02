@@ -6,16 +6,35 @@
     <section>
         <h1>1. Choisi une photo</h1>
         <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
-        <form hx-post="{% url 'app:upload_photo' %}"
-              hx-encoding="multipart/form-data"
-              hx-target="#formMsg">
+        <form method="post" action="{% url 'app:upload_photo' %}"
+              enctype="multipart/form-data">
             {% csrf_token %}
             <div>
                 {{ form.photo.label_tag }} {{ form.photo }}
-                <button type="submit">Charger photo</button>
+                <button type="submit">Charger nouvelle image</button>
             </div>
         </form>
-        <div id="formMsg"></div>
+        <div>{{ form.errors }}</div>
+
+        {% if latest_images %}
+            <form method="post" action="{% url 'app:upload_latest' %}">
+                {% csrf_token %}
+                <p>Ou choisir parmi l´une des 3 dernières photos chargées:</p>
+                <label for="imageSelect">Choisissez parmi les trois dernières images:</label>
+                <select id="imageSelect" name="imageSelect">
+                    {% for latest_image in latest_images %}
+                        {% if latest_image.id == image.id %}
+                            <option value="{{ latest_image.id }}" selected>Image #{{ latest_image.id }} - uploaded
+                                at {{ latest_image.uploaded_at }}</option>
+                        {% else %}
+                            <option value="{{ latest_image.id }}">Image #{{ latest_image.id }} - uploaded
+                                at {{ latest_image.uploaded_at }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit">Charger image</button>
+            </form>
+        {% endif %}
     </section>
     <section>
         <h1>2. Éditer et modifier la grille</h1>

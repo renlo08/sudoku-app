@@ -24,7 +24,7 @@ from sudoku import views
 urlpatterns = [
     path('', views.index, name='home'),
     path('admin/', admin.site.urls),
-    path('solver-app/', include('app.urls'), name='app'),
+    path('app/', include('app.urls'), name='app'),
 ]
 
 if settings.DEBUG:

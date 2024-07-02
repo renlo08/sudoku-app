@@ -2,12 +2,12 @@ import os
 
 from django import forms
 
-from app.models import Image
+from app.models import Sudoku
 
 
 class ImageForm(forms.ModelForm):
     class Meta:
-        model = Image
+        model = Sudoku
         fields = '__all__'
         labels = {
             'photo': 'Choisir la photo '

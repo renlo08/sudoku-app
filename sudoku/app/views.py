@@ -3,14 +3,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from app.forms import ImageForm
-from app.models import Image
+from app.models import Sudoku
 
 
 def upload_photo_view(request):
     if request.method == 'POST':
         form = ImageForm(request.POST, request.FILES)
         if form.is_valid():
-            new_image = Image(photo=request.FILES['photo'])
+            new_image = Sudoku(photo=request.FILES['photo'])
             new_image.save()  # Save the image so we can access it later
             request.session['image_selection'] = new_image.id
 
@@ -25,6 +25,6 @@ def upload_photo_view(request):
 
 def upload_latest_view(request):
     if request.method == 'POST':
-        img = get_object_or_404(Image, pk=request.POST['imageSelect'])
+        img = get_object_or_404(Sudoku, pk=request.POST['imageSelect'])
         request.session['image_selection'] = img.id
         return redirect('home')

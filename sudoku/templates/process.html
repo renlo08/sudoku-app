@@ -1,6 +1,7 @@
 <div id="imageProcessing">
     {% if image %}
-        <img src="{{ image.photo.url }}" alt="img" width="200" height="250">
+        <p>Image avant modification:</p>
+        <img src="{{ image.photo.url }}" alt="img">
     {% else %}
         <p>Aucune image chargé pour le moment</p>
     {% endif %}

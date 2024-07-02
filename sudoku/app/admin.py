@@ -1,7 +1,7 @@
 from django.utils.html import format_html
 from django.contrib import admin
 
-from app.models import Image
+from app.models import Sudoku
 
 
 class ImageAdmin(admin.ModelAdmin):
@@ -13,4 +13,4 @@ class ImageAdmin(admin.ModelAdmin):
     preview.short_description = 'Preview'
 
 
-admin.site.register(Image, ImageAdmin)
+admin.site.register(Sudoku, ImageAdmin)

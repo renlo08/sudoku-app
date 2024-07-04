@@ -1,29 +1,17 @@
 import io
 from os import path
 
+import cv2
+import numpy as np
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
-from django.urls import reverse
 
 
 class Sudoku(models.Model):
     id = models.AutoField(primary_key=True)
     photo = models.ImageField(upload_to='sudoku_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    def get_gray_scale_image_url(self):
-        return reverse("app:grayed_image", kwargs={"pk": self.pk})
-        # Convert PIL image to OpenCV format (numpy array)
-        cv_img = np.array(image)
-
-        # Convert image to gray scale using cv2
-        gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
-
-        # Convert back to PIL Image from numpy array
-        img_gray = Image.fromarray(gray)
-
-        return img_gray
 
     def save(self, *args, **kwargs):
         # call the parent class's save.
@@ -41,3 +29,19 @@ class Sudoku(models.Model):
 
         self.photo = ContentFile(output.read(), filename)
         super().save(*args, **kwargs)
+
+    def convert_as_array(self):
+        self.photo.seek(0)
+
+        # Open the image file
+        img = Image.open(self.photo.path)
+
+        # Convert PIL image to OpenCV format (numpy array)
+        return np.array(img)
+
+    def color_background_to_gray(self):
+        cv_img = self.convert_as_array()
+
+        # Convert image to gray scale using cv2
+        gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+        return gray

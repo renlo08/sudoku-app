@@ -1,12 +1,24 @@
 <div id="imageProcessing">
     {% if image %}
-        <p>Image avant modification:</p>
-        <img src="{{ image.photo.url }}" alt="img">
-        <button hx-post="{% url 'app:plot_gray' image.pk%}" 
-                hx-target="#plotImage" 
-                hx-trigger="click" 
-                hx-swap="innerHTML">Gray</button>
-        <div class="plotImage"></div>
+        <nav>
+            <ul>
+                <li>
+
+                    <a hx-get="{% url 'app:plot-image' image.pk %}"
+                       hx-target="#plotImage"
+                       hx-trigger="click"
+                       hx-swap="innerHTML">Image sans modification</a>
+                </li>
+                <li>
+                    <a hx-get="{% url 'app:plot-image' image.pk %}?color=gray"
+                       hx-target="#plotImage"
+                       hx-trigger="click"
+                       hx-swap="innerHTML">Image noir & blanc</a>
+
+                </li>
+            </ul>
+        </nav>
+        <div id="plotImage"></div>
     {% else %}
         <p>Aucune image chargé pour le moment</p>
     {% endif %}

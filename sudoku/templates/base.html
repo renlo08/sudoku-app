@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +5,7 @@
     <meta charset="UTF-8">
     <title>SUDOKU-APP</title>
 
+    {% load static %}
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
 
 </head>
@@ -26,5 +26,10 @@
 </main>
 
 <footer>placeholder footer</footer>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+</script>
 </body>
 </html>

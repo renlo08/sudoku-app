@@ -31,22 +31,23 @@ def upload_latest_view(request):
         return redirect('home')
 
 
-def gray_view(request, pk):
+def plot_image_view(request, pk):
+    color = request.GET.get('color')
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
 
-    # Open the image file
-    img = Image.open(sudoku.photo.path)
-
-    # Convert PIL image to OpenCV format (numpy array)
-    cv_img = np.array(img)
-
-    # Convert image to gray scale using cv2
-    gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+    if color == 'gray':
+        # Convert image to gray scale
+        image = sudoku.color_background_to_gray()
+        fig = px.imshow(image, color_continuous_scale=["black", "white"])
+    else:
+        # get the basic image
+        image = sudoku.convert_as_array()
+        fig = px.imshow(image)
 
     # create the plot
-    fig = px.imshow(gray)
-    fig.update_layout(width=250, height=250, margin=dict(l=10, r=10, b=10, t=10))
+    fig.update_layout(width=300, height=300, margin=dict(l=10, r=10, b=10, t=10), coloraxis_showscale=False)
     fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
+
     gray_plt = fig.to_html()
     return render(request, 'app/partials/plot.html', context={'plot': gray_plt})

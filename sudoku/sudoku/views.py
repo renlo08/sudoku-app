@@ -7,12 +7,12 @@ from app.models import Sudoku
 def index(request):
     # Fetch the 3 latest images (you might want to handle case with no images or less than 3 images)
     latest_images = Sudoku.objects.order_by('-id')[:3]
-
+    form = request.session.pop('imageForm', ImageForm())
     context = {
-        'form': ImageForm(),
+        'form': form,
         'latest_images': latest_images
     }
-    if image_pk := request.session.get('image_selection'):
-        image = Sudoku.objects.get(pk=image_pk)
+    if pk := request.session.pop('imageID', None):
+        image = Sudoku.objects.get(pk=pk)
         context['image'] = image
     return render(request, 'index.html', context=context)

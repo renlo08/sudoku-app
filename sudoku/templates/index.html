@@ -14,7 +14,19 @@
                 <button type="submit">Charger nouvelle image</button>
             </div>
         </form>
-        <div>{{ form.errors }}</div>
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field in form %}
+                        <!-- This is how to iterate on each field of the form -->
+                        {% for error in field.errors %}
+                            <!-- This will display each error of every field -->
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
         {% if latest_images %}
             <form method="post" action="{% url 'app:upload_latest' %}">

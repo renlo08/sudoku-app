@@ -11,6 +11,7 @@ urlpatterns = [
 htmx_urlpatterns = [
     path('upload/', views.upload_photo_view, name='upload_photo'),
     path('upload_latest/', views.upload_latest_view, name='upload_latest'),
+    path('gray/<int:pk>/', views.gray_view, name='plot_gray'),
 ]
 
 urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)

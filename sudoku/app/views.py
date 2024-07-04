@@ -23,15 +23,15 @@ def upload_photo_view(request):
 
 
 def upload_latest_view(request):
-    if request.method == 'POST':
-        img = get_object_or_404(Sudoku, pk=request.POST['imageSelect'])
+    if request.method == 'GET':
+        img = get_object_or_404(Sudoku, pk=request.GET['latestImageId'])
 
         request.session['imageID'] = img.pk  # store the image PK in session
 
         return redirect('home')
 
 
-def gray_view(request, pk: int):
+def gray_view(request, pk):
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
 

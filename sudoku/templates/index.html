@@ -29,11 +29,10 @@
         {% endif %}
 
         {% if latest_images %}
-            <form method="post" action="{% url 'app:upload_latest' %}">
-                {% csrf_token %}
+            <form method="get" action="{% url 'app:upload_latest' %}">
                 <p>Ou choisir parmi l´une des 3 dernières photos chargées:</p>
-                <label for="imageSelect">Choisissez parmi les trois dernières images:</label>
-                <select id="imageSelect" name="imageSelect">
+                <label for="latestImage">Choisissez parmi les trois dernières images:</label>
+                <select id="latestImage" name="latestImageId">
                     {% for latest_image in latest_images %}
                         {% if latest_image.id == image.id %}
                             <option value="{{ latest_image.id }}" selected>Image #{{ latest_image.id }} - uploaded

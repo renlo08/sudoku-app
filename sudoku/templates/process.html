@@ -10,11 +10,16 @@
                        hx-swap="innerHTML">Image sans modification</a>
                 </li>
                 <li>
-                    <a hx-get="{% url 'app:plot-image' image.pk %}?color=gray"
+                    <a hx-get="{% url 'app:plot-image' image.pk %}?processingStep=gray"
                        hx-target="#plotImage"
                        hx-trigger="click"
                        hx-swap="innerHTML">Image noir & blanc</a>
-
+                </li>
+                <li>
+                    <a hx-get="{% url 'app:plot-image' image.pk %}?processingStep=denoised"
+                       hx-target="#plotImage"
+                       hx-trigger="click"
+                       hx-swap="innerHTML">Filtrage du bruit</a>
                 </li>
             </ul>
         </nav>

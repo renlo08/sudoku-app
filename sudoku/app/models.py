@@ -45,3 +45,12 @@ class Sudoku(models.Model):
         # Convert image to gray scale using cv2
         gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
         return gray
+
+    def denoised_background(self):
+        gray_image = self.color_background_to_gray()
+
+        # filter noice
+        blurred = cv2.GaussianBlur(gray_image, (7, 7), 3)
+        thresh = cv2.adaptiveThreshold(blurred, 255,
+                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        return thresh

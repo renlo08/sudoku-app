@@ -32,11 +32,15 @@ def upload_latest_view(request):
 
 
 def plot_image_view(request, pk):
-    color = request.GET.get('color')
+    step = request.GET.get('processingStep')
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
 
-    if color == 'gray':
+    if step == 'gray':
+        # Convert image to gray scale
+        image = sudoku.color_background_to_gray()
+        fig = px.imshow(image, color_continuous_scale=["black", "white"])
+    elif step == 'denoised':
         # Convert image to gray scale
         image = sudoku.color_background_to_gray()
         fig = px.imshow(image, color_continuous_scale=["black", "white"])

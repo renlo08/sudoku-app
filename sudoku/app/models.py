@@ -49,11 +49,8 @@ class Sudoku(models.Model):
     def process_image(self):
         image = self.color_background_to_gray()
 
-        # filter noice
-        processed_image = cv2.medianBlur(image, 7, 3)
-        processed_image = cv2.adaptiveThreshold(processed_image, 255, 1, 1, 11, 2)
-        # image = cv2.adaptiveThreshold(image, 255,
-        #                                cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-        # invert color
-        # image = cv2.bitwise_not(image)
-        return processed_image, image
+        # Apply thresholding to create a binary image
+        _, processed_image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # OpenCV findContour can require black background and white forground, thus invert color.
+        processed_image = cv2.bitwise_not(processed_image)
+        return processed_image

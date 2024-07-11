@@ -9,11 +9,15 @@
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=gray"
                        hx-target="#image-container"
                        hx-trigger="click"
-                       hx-swap="innerHTML">Voir l´image grisée</a></li>
+                       hx-swap="innerHTML">Griser l´image</a></li>
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=find-contours"
                        hx-target="#image-container"
                        hx-trigger="click"
-                       hx-swap="innerHTML">Voir contour</a></li>
+                       hx-swap="innerHTML">Détecter contours</a></li>
+                <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=reshape"
+                       hx-target="#image-container"
+                       hx-trigger="click"
+                       hx-swap="innerHTML">Redresser l´image</a></li>
             </ul>
         </nav>
         <div id="image-container"></div>

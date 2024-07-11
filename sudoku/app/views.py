@@ -37,24 +37,22 @@ def plot_image_view(request, pk):
     step = request.GET.get('step')
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
-
+    image = sudoku.convert_as_array()
+    gray_image = sudoku.color_background_to_gray()
+    processed_image = sudoku.process_image()
+    image_with_contours, contours, hierarchy = utils.detect_contours(sudoku)
+    image_wrap = utils.reshape_image(contours, image)
     if step == 'gray':
         # Convert image to gray scale
-        image = sudoku.color_background_to_gray()
-        fig = px.imshow(image, binary_string=True)
-        # fig = px.imshow(image, color_continuous_scale=["black", "white"])
+        fig = px.imshow(gray_image, binary_string=True)
     elif step == 'find-contours':
+        # source: https://medium.com/@vipinra79/mastering-contouring-in-opencv-a-comprehensive-guide-10e6fe2a069a
         # Process image to facilitate the recognition of the sudoku contour.
-        processed_image, image = sudoku.process_image()
-
-        image, contour, hierarchy = utils.detect_contours(image, processed_image)
-
-        context = {'enable_contours': True}
-
-        fig = px.imshow(image)
+        fig = px.imshow(image_with_contours)
+    elif step == 'reshape':
+        fig = px.imshow(image_wrap)
     else:
         # get the basic image
-        image = sudoku.convert_as_array()
         fig = px.imshow(image)
 
     # create the plot

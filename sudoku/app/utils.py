@@ -1,5 +1,6 @@
 import random
 
+import cv2
 from django.utils.text import slugify
 
 
@@ -19,3 +20,16 @@ def slugify_instance_name(instance, save=False, new_slug=None):
     if save:
         instance.save()
     return instance
+
+
+def detect_contours(image, processed_image):
+    """
+    Find all the outline contours present in the image.
+    :param image: the original image before processing.
+    :param processed_image: the processed image after processing.
+    :return: the processed image with the detected contours, the contour areas and the outline contours.
+    """
+    contoured_image = image.copy()
+    contour, hierarchy = cv2.findContours(processed_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(contoured_image, contour, -1, (0, 255, 0), 3)
+    return contoured_image, contour, hierarchy

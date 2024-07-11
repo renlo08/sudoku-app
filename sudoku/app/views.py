@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from app.forms import ImageForm
 from app.models import Sudoku
+from app import utils
 
 
 def upload_photo_view(request):
@@ -32,18 +33,25 @@ def upload_latest_view(request):
 
 
 def plot_image_view(request, pk):
-    step = request.GET.get('processingStep')
+    context = {}
+    step = request.GET.get('step')
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
 
     if step == 'gray':
         # Convert image to gray scale
         image = sudoku.color_background_to_gray()
-        fig = px.imshow(image, color_continuous_scale=["black", "white"])
-    elif step == 'denoised':
-        # Convert image to gray scale
-        image = sudoku.color_background_to_gray()
-        fig = px.imshow(image, color_continuous_scale=["black", "white"])
+        fig = px.imshow(image, binary_string=True)
+        # fig = px.imshow(image, color_continuous_scale=["black", "white"])
+    elif step == 'find-contours':
+        # Process image to facilitate the recognition of the sudoku contour.
+        processed_image, image = sudoku.process_image()
+
+        image, contour, hierarchy = utils.detect_contours(image, processed_image)
+
+        context = {'enable_contours': True}
+
+        fig = px.imshow(image)
     else:
         # get the basic image
         image = sudoku.convert_as_array()
@@ -53,5 +61,5 @@ def plot_image_view(request, pk):
     fig.update_layout(width=300, height=300, margin=dict(l=10, r=10, b=10, t=10), coloraxis_showscale=False)
     fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
 
-    gray_plt = fig.to_html()
-    return render(request, 'app/partials/plot.html', context={'plot': gray_plt})
+    context['plot'] = fig.to_html()
+    return render(request, 'app/partials/plot.html', context=context)

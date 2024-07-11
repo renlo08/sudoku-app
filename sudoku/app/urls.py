@@ -12,6 +12,7 @@ urlpatterns = [
 
 htmx_urlpatterns = [
     path('<int:pk>/plot-image/', views.plot_image_view, name='plot-image'),
+
 ]
 
 urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)

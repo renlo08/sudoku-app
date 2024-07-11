@@ -46,11 +46,14 @@ class Sudoku(models.Model):
         gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
         return gray
 
-    def denoised_background(self):
-        gray_image = self.color_background_to_gray()
+    def process_image(self):
+        image = self.color_background_to_gray()
 
         # filter noice
-        blurred = cv2.GaussianBlur(gray_image, (7, 7), 3)
-        thresh = cv2.adaptiveThreshold(blurred, 255,
-                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-        return thresh
+        processed_image = cv2.medianBlur(image, 7, 3)
+        processed_image = cv2.adaptiveThreshold(processed_image, 255, 1, 1, 11, 2)
+        # image = cv2.adaptiveThreshold(image, 255,
+        #                                cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        # invert color
+        # image = cv2.bitwise_not(image)
+        return processed_image, image

@@ -1,11 +1,8 @@
-import cv2
-import numpy as np
-from PIL import Image
 import plotly.express as px
 from django.shortcuts import render, redirect, get_object_or_404
 
 from app.forms import ImageForm
-from app.models import Sudoku
+from app.models import Sudoku, ProcessedImage
 from app import utils
 
 
@@ -41,7 +38,8 @@ def plot_image_view(request, pk):
     gray_image = sudoku.color_background_to_gray()
     processed_image = sudoku.process_image()
     image_with_contours, contours, hierarchy = utils.detect_contours(sudoku)
-    image_wrap = utils.reshape_image(contours, image)
+    reshaped_image = utils.reshape_image(contours, image)
+    request.session['reshaped_image'] = reshaped_image
     if step == 'gray':
         # Convert image to gray scale
         fig = px.imshow(gray_image, binary_string=True)
@@ -50,7 +48,15 @@ def plot_image_view(request, pk):
         # Process image to facilitate the recognition of the sudoku contour.
         fig = px.imshow(image_with_contours)
     elif step == 'reshape':
-        fig = px.imshow(image_wrap)
+        fig = px.imshow(reshaped_image)
+
+    elif step == "get-cells":
+        cells = utils.split_sudoku_cells(reshaped_image)
+        # Update the processed image in the instance
+        # processed_img_instance = ProcessedImage.objects.create(data=image_wrap)
+        # sudoku.reshaped_image = processed_img_instance
+        # sudoku.save()
+
     else:
         # get the basic image
         fig = px.imshow(image)

@@ -1,6 +1,9 @@
+import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 from django.shortcuts import render, redirect, get_object_or_404
 
+from app.ai.classifier.model import SudokuOCRClassifier
 from app.forms import ImageForm
 from app.models import Sudoku, ProcessedImage
 from app import utils
@@ -30,40 +33,42 @@ def upload_latest_view(request):
 
 
 def plot_image_view(request, pk):
-    context = {}
+    plot_context = {}
     step = request.GET.get('step')
     # Retrieve the sudoku instance
     sudoku = get_object_or_404(Sudoku, pk=pk)
-    image = sudoku.convert_as_array()
-    gray_image = sudoku.color_background_to_gray()
-    processed_image = sudoku.process_image()
-    image_with_contours, contours, hierarchy = utils.detect_contours(sudoku)
-    reshaped_image = utils.reshape_image(contours, image)
-    request.session['reshaped_image'] = reshaped_image
-    if step == 'gray':
-        # Convert image to gray scale
-        fig = px.imshow(gray_image, binary_string=True)
-    elif step == 'find-contours':
-        # source: https://medium.com/@vipinra79/mastering-contouring-in-opencv-a-comprehensive-guide-10e6fe2a069a
-        # Process image to facilitate the recognition of the sudoku contour.
-        fig = px.imshow(image_with_contours)
-    elif step == 'reshape':
-        fig = px.imshow(reshaped_image)
 
-    elif step == "get-cells":
-        cells = utils.split_sudoku_cells(reshaped_image)
-        # Update the processed image in the instance
-        # processed_img_instance = ProcessedImage.objects.create(data=image_wrap)
-        # sudoku.reshaped_image = processed_img_instance
-        # sudoku.save()
+    # All image preparation happens inside Sudoku class
+    reshaped_image, gray_image, image, image_with_contours = sudoku.prepare_images()
 
-    else:
-        # get the basic image
-        fig = px.imshow(image)
+    request.session['reshaped_image'] = reshaped_image.tolist()
 
-    # create the plot
+    fig = generate_fig(step, gray_image, image_with_contours, reshaped_image, image)
+
     fig.update_layout(width=300, height=300, margin=dict(l=10, r=10, b=10, t=10), coloraxis_showscale=False)
     fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
 
-    context['plot'] = fig.to_html()
-    return render(request, 'app/partials/plot.html', context=context)
+    plot_context['plot'] = fig.to_html()
+    return render(request, 'app/partials/plot.html', context=plot_context)
+
+
+def generate_fig(step, gray_image, image_with_contours, reshaped_image, image):
+    # Simplified conditional logic
+    if step == 'gray':
+        return px.imshow(gray_image, binary_string=True)
+    elif step == 'find-contours':
+        return px.imshow(image_with_contours)
+    elif step == 'reshape':
+        return px.imshow(reshaped_image)
+    else:
+        return px.imshow(image)
+
+
+def fill_board_view(request):
+    # Initialise the sudoku board and the classification model
+    # model = SudokuOCRClassifier.setup_classifier('app/ai/classifier/model_weights.h5')
+    model = SudokuOCRClassifier.setup_classifier('app/ai/classifier/ocr_model_weights.h5')
+    raw_cells = utils.split_sudoku_cells(request.session.get('reshaped_image'))
+    raw_cells = list(map(utils.crop_cell, raw_cells))
+    board = utils.get_predicted_board(model, raw_cells)
+    return render(request, 'app/partials/prepare-board.html', {'board': board})

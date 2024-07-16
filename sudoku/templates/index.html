@@ -53,6 +53,11 @@
     </section>
     <section>
         <h1>3. Calculer la solution</h1>
+        <button hx-get="{% url 'app:prepare-board' %}" 
+                hx-target='#board-container' 
+                hx-trigger="click" 
+                hx-swap="innerHTML">Load Board</button>
+        <div id="board-container"></div>
     </section>
 
 {% endblock content %}

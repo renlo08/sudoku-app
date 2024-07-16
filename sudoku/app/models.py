@@ -7,6 +7,8 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
 
+from app import utils
+
 
 class ProcessedImage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -69,3 +71,10 @@ class Sudoku(models.Model):
         # OpenCV findContour can require black background and white foreground, thus invert color.
         processed_image = cv2.bitwise_not(processed_image)
         return processed_image
+
+    def prepare_images(self):
+        image = self.convert_as_array()
+        gray_image = self.color_background_to_gray()
+        image_with_contours, contours, hierarchy = utils.detect_contours(self)
+        reshaped_image = utils.reshape_image(contours, image)
+        return reshaped_image, gray_image, image, image_with_contours

@@ -3,8 +3,7 @@ import random
 import cv2
 import numpy as np
 from django.utils.text import slugify
-
-from app.models import Sudoku
+from tensorflow.keras import preprocessing
 
 
 def slugify_instance_name(instance, save=False, new_slug=None):
@@ -25,11 +24,10 @@ def slugify_instance_name(instance, save=False, new_slug=None):
     return instance
 
 
-def detect_contours(image: Sudoku):
+def detect_contours(image):
     """
     Find all the outline contours present in the image.
     :param image: the original image before processing.
-    :return: the processed image with the detected contours, the contour areas and the outline contours.
     """
     processed_image = image.process_image()
     contoured_image = image.convert_as_array()
@@ -74,7 +72,9 @@ def reframe_outline_contours(points):
 
 
 def split_sudoku_cells(image):
+    image = np.array(image)
     # Split the image of sudoku in 9 rows, then split each row horizontally in 9 cells.
+
     rows = np.vsplit(image, 9)
     cells = []
     for row in rows:
@@ -93,11 +93,33 @@ def reshape_image(contours, image):
         pts_1 = np.float32(biggest_contour)
         pts_2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
         matrix = cv2.getPerspectiveTransform(pts_1, pts_2)
-        image_wrap = cv2.warpPerspective(image, matrix, (300, 300))
+        image_wrap = cv2.warpPerspective(image, matrix, (306, 306))
         image_wrap = cv2.cvtColor(image_wrap, cv2.COLOR_BGR2GRAY)
+
+        # Make sure that the image in row
         return image_wrap
     raise ValueError("Cannot find a suitable contour in the image.")
 
 
 black_image = np.zeros((450, 450, 3), dtype=np.uint8)
 
+
+def crop_cell(cell):
+    from PIL import Image
+    data = np.array(cell, dtype=np.uint8)
+    return data[2:32, 2:32]
+    # return Image.fromarray(data[4:46, 4:46])
+
+
+def prepare_cell_for_classification(cell):
+    # Prepare the cell for classification
+    roi = np.array(cv2.resize(cell, (28, 28)).astype("float") / 255.0)
+    roi = np.expand_dims(preprocessing.image.img_to_array(roi), axis=0)
+    return roi
+
+
+def get_predicted_board(classifier, cropped_cells):
+    prepared_cells = np.concatenate([prepare_cell_for_classification(cell) for cell in cropped_cells])
+
+    predictions = classifier.predict(prepared_cells)
+    return np.reshape(predictions, (9, 9)).tolist()

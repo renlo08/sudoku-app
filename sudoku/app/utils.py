@@ -115,7 +115,8 @@ def prepare_cell_for_classification(cell):
     # Prepare the cell for classification
     roi = np.array(cv2.resize(cell, (28, 28)).astype("float") / 255.0)
     roi = np.expand_dims(preprocessing.image.img_to_array(roi), axis=0)
-    return roi
+    roi = cv2.equalizeHist(roi) #Histogram equalization to enhance contrast
+    return roi/255  # normalizing
 
 
 def get_predicted_board(classifier, cropped_cells):

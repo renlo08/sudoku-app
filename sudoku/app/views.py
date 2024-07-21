@@ -1,11 +1,9 @@
-import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 from django.shortcuts import render, redirect, get_object_or_404
 
-from app.ai.classifier.model import SudokuOCRClassifier
+from app.ocr.model import classifier
 from app.forms import ImageForm
-from app.models import Sudoku, ProcessedImage
+from app.models import Sudoku
 from app import utils
 
 
@@ -67,7 +65,8 @@ def generate_fig(step, gray_image, image_with_contours, reshaped_image, image):
 def fill_board_view(request):
     # Initialise the sudoku board and the classification model
     # model = SudokuOCRClassifier.setup_classifier('app/ai/classifier/model_weights.h5')
-    model = SudokuOCRClassifier.setup_classifier('app/ai/classifier/ocr_model_weights.h5')
+    weights_file = 'app/ocr/model/sudoku_ocr_classifier.weights.h5'
+    model = classifier.SudokuOCRClassifier.prepare(load_weights=True, weights_file=weights_file)
     raw_cells = utils.split_sudoku_cells(request.session.get('reshaped_image'))
     raw_cells = list(map(utils.crop_cell, raw_cells))
     board = utils.get_predicted_board(model, raw_cells)

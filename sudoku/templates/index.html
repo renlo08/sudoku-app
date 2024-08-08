@@ -1,17 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div>Cette application propose la solution d´une grille de sudoku à partir d´une photo de cette grille de sudoku.
+    <div>
+        <p>
+            Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo
+            de la grille et laisse <strong> Sudoku App </strong> faire le boulot.
+        </p>
+        <p>
+            Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une
+            solution en un clin d'œil.
+        </p>
+        <p>
+            Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !
+        </p>
     </div>
     <section>
-        <h1>1. Choisi une photo</h1>
+        <h1>1. Choisis une photo</h1>
         <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
         <form method="post" action="{% url 'app:upload_photo' %}"
               enctype="multipart/form-data">
             {% csrf_token %}
             <div>
                 {{ form.photo.label_tag }} {{ form.photo }}
-                <button type="submit">Charger nouvelle image</button>
+                <button type="submit">Charger une nouvelle image</button>
             </div>
         </form>
         {% if form.errors %}
@@ -31,7 +42,7 @@
         {% if latest_images %}
             <form method="get" action="{% url 'app:upload_latest' %}">
                 <p>Ou choisir parmi l´une des 3 dernières photos chargées:</p>
-                <label for="latestImage">Choisissez parmi les trois dernières images:</label>
+                <label for="latestImage">Sélectionner parmi les trois dernières images:</label>
                 <select id="latestImage" name="latestImageId">
                     {% for latest_image in latest_images %}
                         {% if latest_image.id == image.id %}
@@ -48,16 +59,17 @@
         {% endif %}
     </section>
     <section>
-        <h1>2. Éditer et modifier la grille</h1>
+        <h1>2. Initialise la grille</h1>
         {% include 'process.html' %}
+        <button hx-get="{% url 'app:prepare-board' %}"
+                hx-target='#board-container'
+                hx-trigger="click"
+                hx-swap="innerHTML">Initialiser la grille
+        </button>
+        <div id="board-container"></div>
     </section>
     <section>
-        <h1>3. Calculer la solution</h1>
-        <button hx-get="{% url 'app:prepare-board' %}" 
-                hx-target='#board-container' 
-                hx-trigger="click" 
-                hx-swap="innerHTML">Load Board</button>
-        <div id="board-container"></div>
+        <h1>3. Obtiens la solution</h1>
     </section>
 
 {% endblock content %}

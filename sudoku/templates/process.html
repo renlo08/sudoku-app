@@ -5,7 +5,7 @@
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}"
                        hx-target="#image-container"
                        hx-trigger="click"
-                       hx-swap="innerHTML">Voir l´image original</a></li>
+                       hx-swap="innerHTML">Montrer l´image</a></li>
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=gray"
                        hx-target="#image-container"
                        hx-trigger="click"
@@ -13,7 +13,7 @@
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=find-contours"
                        hx-target="#image-container"
                        hx-trigger="click"
-                       hx-swap="innerHTML">Détecter contours</a></li>
+                       hx-swap="innerHTML">Détecter contours dans l´image</a></li>
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=reshape"
                        hx-target="#image-container"
                        hx-trigger="click"
@@ -21,11 +21,11 @@
                 <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=remove-contrast"
                        hx-target="#image-container"
                        hx-trigger="click"
-                       hx-swap="innerHTML">Before contrast</a></li>
+                       hx-swap="innerHTML">Améliorer les contrastes</a></li>
             </ul>
         </nav>
         <div id="image-container"></div>
     {% else %}
-        <p>Aucune image chargé pour le moment</p>
+        <p>Aucune image n'est chargée pour le moment.</p>
     {% endif %}
 </div>

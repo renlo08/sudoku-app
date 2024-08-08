@@ -1,6 +1,9 @@
 import os
 from typing import Tuple
 
+import numpy as np
+import skimage
+
 from tensorflow.keras import preprocessing
 
 from app.ocr.model import classifier
@@ -15,7 +18,6 @@ def prepare_train_val_test_set(batch_size: int, image_size: Tuple[int, int]):
 
     # Create generator with augmented image for training
     train_gen = preprocessing.image.ImageDataGenerator(
-        preprocessing_function=invert_color,
         rescale=1. / 255,
         rotation_range=2,
         width_shift_range=0.1,
@@ -27,7 +29,6 @@ def prepare_train_val_test_set(batch_size: int, image_size: Tuple[int, int]):
 
     # Create generator with dataset image for validation
     val_test_gen = preprocessing.image.ImageDataGenerator(
-        preprocessing_function=invert_color,
         rescale=1. / 255,
         validation_split=0.333)
 
@@ -55,12 +56,12 @@ def prepare_train_val_test_set(batch_size: int, image_size: Tuple[int, int]):
         subset='training')  # Use 'training' to take 2/3 of the remaining 40% (after training set)
 
     test_generator = val_test_gen.flow_from_directory(
-        batch_size=batch_size,
+        batch_size=1,
         directory='./data',
         color_mode="grayscale",
-        shuffle=True,
+        shuffle=False,
         target_size=image_size,
-        class_mode='categorical',
+        class_mode=None,
         seed=42,
         subset='validation')  # Use 'validation' to take 1/3 of the remaining 40% (after training set)
 

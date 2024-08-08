@@ -1,5 +1,11 @@
 import logging
+import os
 from typing import Generator
+import warnings
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', category=UserWarning,
+                        module='keras.src.trainers.data_adapters.py_dataset_adapter')
 
 import keras
 import tensorflow as tf
@@ -29,8 +35,8 @@ logger.addHandler(console_handler)
 
 class SudokuOCRClassifier:
     model = None
-    image_width = 28  # number of pixels
-    image_height = 28  # number of pixels
+    image_width = 32  # number of pixels
+    image_height = 32  # number of pixels
     image_depth = 1  # image are in gray
     classes = 10  # sudoku numbers are going from 1..9 or empty
     epochs = 100
@@ -45,7 +51,12 @@ class SudokuOCRClassifier:
 
     def set_optimizer(self):
         logger.info('Setting optimizer')
-        self.optimizer = keras.optimizers.SGD(learning_rate=.01, momentum=0.9, nesterov=True)
+        initial_learning_rate = 0.01
+        lr_schedule = keras.optimizers.schedules.ExponentialDecay(
+            initial_learning_rate, decay_steps=100000, decay_rate=0.96, staircase=True
+        )
+
+        self.optimizer = keras.optimizers.SGD(learning_rate=lr_schedule, momentum=0.9, nesterov=True)
 
     def build_model(self):
         logger.info("Building model structure...")
@@ -77,7 +88,7 @@ class SudokuOCRClassifier:
         model.add(keras.layers.Activation("softmax"))
         self.model = model
         self.state = 'build'
-        logger.info("Model structure built")
+        logger.info(f"Model structure built:\n{model.summary()}")
 
     def load_weights(self, weights: str):
         if self.model is None:
@@ -107,13 +118,15 @@ class SudokuOCRClassifier:
 
     def predict(self, rois: np.ndarray):
         logger.info(f"Run inference for {rois.shape[0]} digits.")
-        return self.model.predict(rois, verbose=1).argmax(axis=1)
+        probs = self.model.predict(rois, verbose=1)
+        max_prob = np.max(probs, axis=1)
+        return np.where(max_prob > 0.6, probs.argmax(axis=1), 0)
 
     def predict_generator(self, generator: Generator):
-        return self.model.predict(generator, verbose=1)
+        return self.model.predict(generator, verbose=0)
 
     def setup_callbacks(self):
-        return [callbacks.EarlyStopping(monitor='val_accuracy',
+        return [callbacks.EarlyStopping(monitor='val_loss',
                                         patience=15,
                                         restore_best_weights=True)]
 
@@ -138,7 +151,8 @@ class SudokuOCRClassifier:
             epochs=self.epochs,
             validation_data=val_data,
             validation_steps=val_data.samples // self.batch_size,
-            callbacks=callbacks)
+            callbacks=callbacks,
+            verbose=1)
         self.state = 'trained'
         logger.info("Training complete.")
 

@@ -77,4 +77,5 @@ class Sudoku(models.Model):
         gray_image = self.color_background_to_gray()
         image_with_contours, contours, hierarchy = utils.detect_contours(self)
         reshaped_image = utils.reshape_image(contours, image)
-        return reshaped_image, gray_image, image, image_with_contours
+        contrasted_image = utils.contrasted_image(reshaped_image)
+        return contrasted_image, reshaped_image, gray_image, image, image_with_contours

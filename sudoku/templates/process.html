@@ -18,6 +18,10 @@
                        hx-target="#image-container"
                        hx-trigger="click"
                        hx-swap="innerHTML">Redresser l´image</a></li>
+                <li><a hx-get="{% url 'app:plot-image' image.pk %}?step=remove-contrast"
+                       hx-target="#image-container"
+                       hx-trigger="click"
+                       hx-swap="innerHTML">Before contrast</a></li>
             </ul>
         </nav>
         <div id="image-container"></div>

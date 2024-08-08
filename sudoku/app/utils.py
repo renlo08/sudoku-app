@@ -113,10 +113,8 @@ def crop_cell(cell):
 
 def prepare_cell_for_classification(cell):
     # Prepare the cell for classification
-    roi = np.array(cv2.resize(cell, (28, 28)).astype("float") / 255.0)
-    roi = np.expand_dims(preprocessing.image.img_to_array(roi), axis=0)
-    roi = cv2.equalizeHist(roi) #Histogram equalization to enhance contrast
-    return roi/255  # normalizing
+    roi = np.array(cv2.resize(cell, (32, 32)).astype("float") / 255.0)
+    return np.expand_dims(preprocessing.image.img_to_array(roi), axis=0)
 
 
 def get_predicted_board(classifier, cropped_cells):
@@ -124,3 +122,12 @@ def get_predicted_board(classifier, cropped_cells):
 
     predictions = classifier.predict(prepared_cells)
     return np.reshape(predictions, (9, 9)).tolist()
+
+
+def contrasted_image(reshaped_image):
+    # Convert each pixel to binary value (white or black)
+    # Here 127 is the threshold value, everything below becomes 0 (black)
+    # and everything above becomes 255 (white)
+    thres = cv2.adaptiveThreshold(reshaped_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                 cv2.THRESH_BINARY, 11, 2)
+    return thres

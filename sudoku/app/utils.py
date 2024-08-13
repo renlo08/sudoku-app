@@ -1,9 +1,14 @@
+import base64
 import random
+from io import BytesIO
 
 import cv2
 import numpy as np
+from PIL import Image
 from django.utils.text import slugify
 from tensorflow.keras import preprocessing
+
+from app.ocr.model import classifier
 
 
 def slugify_instance_name(instance, save=False, new_slug=None):
@@ -121,7 +126,8 @@ def get_predicted_board(classifier, cropped_cells):
     prepared_cells = np.concatenate([prepare_cell_for_classification(cell) for cell in cropped_cells])
 
     predictions = classifier.predict(prepared_cells)
-    return np.reshape(predictions, (9, 9)).tolist()
+    return predictions.tolist()
+    # return np.reshape(predictions, (9, 9)).tolist()
 
 
 def contrasted_image(reshaped_image):
@@ -131,3 +137,22 @@ def contrasted_image(reshaped_image):
     thres = cv2.adaptiveThreshold(reshaped_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                  cv2.THRESH_BINARY, 11, 2)
     return thres
+
+
+def to_image(numpy_img):
+    return Image.fromarray(numpy_img, 'L')
+
+
+def to_data_uri(pil_img):
+    image_io = BytesIO()
+    pil_img.save(image_io, "PNG")
+    # return u'data:image/jpeg;base64,' + data64.decode('utf-8')
+    return base64.b64encode(image_io.getvalue()).decode('utf-8')
+
+
+def get_classification_model():
+    """Return the prepared image classification model."""
+    weights_file = 'app/ocr/model/sudoku_ocr_classifier.weights.h5'
+    return classifier.SudokuOCRClassifier.prepare(
+        load_weights=True, weights_file=weights_file
+    )

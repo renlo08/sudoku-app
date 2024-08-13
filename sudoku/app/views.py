@@ -1,7 +1,8 @@
+import numpy as np
 import plotly.express as px
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from app.ocr.model import classifier
 from app.forms import ImageForm
 from app.models import Sudoku
 from app import utils
@@ -14,7 +15,8 @@ def upload_photo_view(request):
             new_image = Sudoku(photo=request.FILES['photo'])
             new_image.save()  # Save the image so we can access it later
 
-            request.session['imageID'] = new_image.pk  # store the image PK in session
+            # store the image PK in session
+            request.session['imageID'] = new_image.pk
 
         else:
             request.session['imageForm'] = form
@@ -40,9 +42,11 @@ def plot_image_view(request, pk):
 
     request.session['board-image'] = contrasted_image.tolist()
 
-    fig = generate_fig(step, gray_image, image_with_contours, reshaped_image, contrasted_image, image)
+    fig = generate_fig(step, gray_image, image_with_contours,
+                       reshaped_image, contrasted_image, image)
 
-    fig.update_layout(width=300, height=300, margin=dict(l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+    fig.update_layout(width=300, height=300, margin=dict(
+        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
     fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
 
     plot_context = {'plot': fig.to_html()}
@@ -64,11 +68,25 @@ def generate_fig(step, gray_image, image_with_contours, reshaped_image, contrast
 
 
 def fill_board_view(request):
+    # Get board image from session
+    board_image = request.session.get('board-image')
+    if not board_image:
+        # handle error, for example:
+        return HttpResponse('No board image provided!', status=400)
+
     # Initialise the sudoku board and the classification model
-    # model = SudokuOCRClassifier.setup_classifier('app/ai/classifier/model_weights.h5')
-    weights_file = 'app/ocr/model/sudoku_ocr_classifier.weights.h5'
-    model = classifier.SudokuOCRClassifier.prepare(load_weights=True, weights_file=weights_file)
-    raw_cells = utils.split_sudoku_cells(request.session.get('board-image'))
-    raw_cells = list(map(utils.crop_cell, raw_cells))
+    model = utils.get_classification_model()
+
+    # Prepare raw cells images
+    raw_cells = utils.split_sudoku_cells(board_image)
+    raw_cells = [utils.crop_cell(cell) for cell in raw_cells]
+
+    # Convert raw cells to pil images and data URIs
+    pil_images = [utils.to_image(cell) for cell in raw_cells]
+    images_uri = [utils.to_data_uri(img) for img in pil_images]
+
+    # Predict board values using the model
     board = utils.get_predicted_board(model, raw_cells)
-    return render(request, 'app/partials/prepare-board.html', {'board': board})
+
+    # Render the template
+    return render(request, 'app/partials/prepare-board.html', {'board': board, 'cells_uri': images_uri})

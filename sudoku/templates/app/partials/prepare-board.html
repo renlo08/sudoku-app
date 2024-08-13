@@ -1,9 +1,18 @@
+{% load custom_app_tags %}
+
 <table>
-{% for row in board %}
-    <tr>
-    {% for cell in row %}
-        <td>{% if cell != 0 %}{{ cell }}{% else %}-{% endif %}</td>
+    {% for row in board|slice:":9" %}
+        <tr>
+            {% for cell in "012345678"|make_list %}
+                {% item_counter forloop.parentloop.counter0 forloop.counter0 as cell_index %}
+                <td>
+                    <img src="data:image/png;base64, {{ cells_uri|index:cell_index }}" alt="cell-{{ cell_index }}">
+                    <br>
+                    {% if board|index:cell_index != 0 %}{{ board|index:cell_index }}{% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+        {% with board|slice:"9:" as board %}
+        {% endwith %}
     {% endfor %}
-    </tr>
-{% endfor %}
 </table>

@@ -93,17 +93,21 @@ def reshape_image(contours, image):
     image_copy = image.copy()
     biggest_contour, max_area = main_outline_contours(contours)
     if biggest_contour.size != 0:
-        biggest_contour = reframe_outline_contours(biggest_contour)
-        cv2.drawContours(image_copy, biggest_contour, -1, (0, 0, 255), 10)
-        pts_1 = np.float32(biggest_contour)
-        pts_2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
-        matrix = cv2.getPerspectiveTransform(pts_1, pts_2)
-        image_wrap = cv2.warpPerspective(image, matrix, (306, 306))
-        image_wrap = cv2.cvtColor(image_wrap, cv2.COLOR_BGR2GRAY)
-
-        # Make sure that the image in row
-        return image_wrap
+        return _extracted_from_reshape_image(biggest_contour, image_copy, image)
     raise ValueError("Cannot find a suitable contour in the image.")
+
+
+def _extracted_from_reshape_image(biggest_contour, image_copy, image):
+    biggest_contour = reframe_outline_contours(biggest_contour)
+    cv2.drawContours(image_copy, biggest_contour, -1, (0, 0, 255), 10)
+    pts_1 = np.float32(biggest_contour)
+    pts_2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
+    matrix = cv2.getPerspectiveTransform(pts_1, pts_2)
+    image_wrap = cv2.warpPerspective(image, matrix, (306, 306))
+    image_wrap = cv2.cvtColor(image_wrap, cv2.COLOR_BGR2GRAY)
+
+    # Make sure that the image in row
+    return image_wrap
 
 
 black_image = np.zeros((450, 450, 3), dtype=np.uint8)
@@ -131,12 +135,14 @@ def get_predicted_board(classifier, cropped_cells):
 
 
 def contrasted_image(reshaped_image):
-    # Convert each pixel to binary value (white or black)
-    # Here 127 is the threshold value, everything below becomes 0 (black)
-    # and everything above becomes 255 (white)
-    thres = cv2.adaptiveThreshold(reshaped_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                 cv2.THRESH_BINARY, 11, 2)
-    return thres
+    return cv2.adaptiveThreshold(
+        reshaped_image,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        11,
+        2,
+    )
 
 
 def to_image(numpy_img):

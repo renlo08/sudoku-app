@@ -13,6 +13,7 @@ urlpatterns = [
 htmx_urlpatterns = [
     path('<int:pk>/plot-image/', views.plot_image_view, name='plot-image'),
     path('fill-board/', views.fill_board_view, name='prepare-board'),
+    path('update_cell', views.update_cell, name='update_cell'),
 ]
 
 urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)

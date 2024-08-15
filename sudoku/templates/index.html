@@ -41,8 +41,8 @@
 
         {% if latest_images %}
             <form method="get" action="{% url 'app:upload_latest' %}">
-                <p>Ou choisir parmi l´une des 3 dernières photos chargées:</p>
-                <label for="latestImage">Sélectionner parmi les trois dernières images:</label>
+                <p>OU</p>
+                <label for="latestImage">Choisir l´une des photos dejà chargées:</label>
                 <select id="latestImage" name="latestImageId">
                     {% for latest_image in latest_images %}
                         {% if latest_image.id == image.id %}

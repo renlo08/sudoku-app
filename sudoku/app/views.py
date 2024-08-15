@@ -69,8 +69,8 @@ def generate_fig(step, gray_image, image_with_contours, reshaped_image, contrast
 
 def fill_board_view(request):
     # Get board image from session
-    board_image = request.session.get('board-image')
-    if not board_image:
+    board_image_list = request.session.get('board-image')
+    if not board_image_list:
         # handle error, for example:
         return HttpResponse('No board image provided!', status=400)
 
@@ -78,7 +78,7 @@ def fill_board_view(request):
     model = utils.get_classification_model()
 
     # Prepare raw cells images
-    raw_cells = utils.split_sudoku_cells(board_image)
+    raw_cells = utils.split_sudoku_cells(board_image_list)
     raw_cells = [utils.crop_cell(cell) for cell in raw_cells]
 
     # Convert raw cells to pil images and data URIs
@@ -90,3 +90,10 @@ def fill_board_view(request):
 
     # Render the template
     return render(request, 'app/partials/prepare-board.html', {'board': board, 'cells_uri': images_uri})
+
+
+def update_cell(request):
+    # Extract the cell value from the GET parameters
+    cell_value = request.GET.get('name')
+    board = np.zeros((81, 1)).tolist()
+    return render(request, 'app/partials/prepare-board.html', {'board': board})

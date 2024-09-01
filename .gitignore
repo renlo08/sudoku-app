@@ -172,3 +172,6 @@ sudoku_photos/
 
 # ai stuff
 data
+
+# VSCode
+.DS_Store

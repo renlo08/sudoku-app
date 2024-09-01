@@ -16,3 +16,7 @@
         {% endwith %}
     {% endfor %}
 </table>
+<form hx-get="{% url 'app:edit_board' %}" hx-target="#board-container">
+    <input type="hidden" name="board" value="{{ board|safe }}">
+    <button type="submit">Edit</button>
+</form>

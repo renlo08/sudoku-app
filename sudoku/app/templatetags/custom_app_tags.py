@@ -13,3 +13,6 @@ def item_counter(outerloop_counter0, innerloop_counter0):
 def index(items, i):
     return items[int(i)]
 
+@register.filter(name='to')
+def to(value, arg):
+    return range(value, arg + 1)

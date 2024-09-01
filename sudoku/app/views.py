@@ -97,3 +97,9 @@ def update_cell(request):
     cell_value = request.GET.get('name')
     board = np.zeros((81, 1)).tolist()
     return render(request, 'app/partials/prepare-board.html', {'board': board})
+
+
+def edit_board(request):
+    # Get the board from table
+    board = request.GET.get('board')
+    return render(request, 'app/partials/edit-board.html', {'board': board})

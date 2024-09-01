@@ -1,0 +1,11 @@
+{% load custom_app_tags %}
+
+{% for cell in board %}
+    <select>
+        <option value=""> </option>
+        {% for i in 1|to:9 %}
+            <option value="{{ i }}" {% if cell == i %}selected{% endif %}>{{ i }}</option>
+        {% endfor %}
+    </select>
+    <br>
+{% endfor %}

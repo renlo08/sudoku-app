@@ -6,8 +6,8 @@ from sudoku import utils
 app_name = 'app'
 
 urlpatterns = [
-    path('upload/', views.upload_photo_view, name='upload_photo'),
-    path('upload_latest/', views.upload_latest_view, name='upload_latest'),
+    path('upload/', views.upload_view, name='upload'),
+    path('reload/', views.reload_view, name='reload'),
 ]
 
 htmx_urlpatterns = [

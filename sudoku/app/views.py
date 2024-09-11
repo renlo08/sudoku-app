@@ -3,33 +3,33 @@ import plotly.express as px
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from app.forms import ImageForm
+from app.forms import UploadForm
 from app.models import Sudoku
 from app import utils
 
 
-def upload_photo_view(request):
+def upload_view(request):
     if request.method == 'POST':
-        form = ImageForm(request.POST, request.FILES)
+        form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             new_image = Sudoku(photo=request.FILES['photo'])
             new_image.save()  # Save the image so we can access it later
 
             # store the image PK in session
-            request.session['imageID'] = new_image.pk
+            request.session['pk'] = new_image.pk
 
         else:
-            request.session['imageForm'] = form
+            request.session['uploadForm'] = form
     return redirect('home')
 
 
-def upload_latest_view(request):
+def reload_view(request):
     if request.method == 'GET':
-        img = get_object_or_404(Sudoku, pk=request.GET['latestImageId'])
+        img = get_object_or_404(Sudoku, pk=request.GET['pk'])
 
-        request.session['imageID'] = img.pk  # store the image PK in session
+        request.session['pk'] = img.pk  # store the image PK in session
 
-        return redirect('home')
+    return redirect('home')
 
 
 def plot_image_view(request, pk):

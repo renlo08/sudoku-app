@@ -1,18 +1,18 @@
 from django.shortcuts import render
 
-from app.forms import ImageForm
+from app.forms import UploadForm
 from app.models import Sudoku
 
 
 def index(request):
     # Fetch the 3 latest images (you might want to handle case with no images or less than 3 images)
-    latest_images = Sudoku.objects.order_by('-id').all()
-    form = request.session.pop('imageForm', ImageForm())
+    stored_objects = Sudoku.objects.order_by('-id').all()
+    form = request.session.pop('uploadForm', UploadForm())
     context = {
         'form': form,
-        'latest_images': latest_images
+        'objects': stored_objects
     }
-    if pk := request.session.pop('imageID', None):
-        image = Sudoku.objects.get(pk=pk)
-        context['image'] = image
+    if pk := request.session.pop('pk', None):
+        # context['object'] = Sudoku.objects.get(pk=pk)
+        context['object'] = None
     return render(request, 'index.html', context=context)

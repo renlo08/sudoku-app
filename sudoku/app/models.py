@@ -22,11 +22,34 @@ class ProcessedImage(models.Model):
         super().save(*args, **kwargs)
 
 
+class BoardCell(models.Model):
+    id = models.AutoField(primary_key=True)
+    row = models.IntegerField()
+    col = models.IntegerField()
+    data = models.JSONField(default=dict)  # Zone Of Interest
+    predicted_value = models.CharField(max_length=1, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.data:
+            # Ensure that the Zone Of Interest is a python list (np.array)
+            self.data = np.array(self.data).tolist()
+        super().save(*args, **kwargs)
+
+
+class SudokuBoard(models.Model):
+    id = models.AutoField(primary_key=True)
+    cells = models.ManyToManyField(BoardCell)
+    grayscale_data = models.JSONField(default=dict, null=True, blank=True)
+    countour_data = models.JSONField(default=dict, null=True, blank=True)
+    reshaped_data = models.JSONField(default=dict, null=True, blank=True)
+    contrasted_data = models.JSONField(default=dict, null=True, blank=True)
+
+
 class Sudoku(models.Model):
     id = models.AutoField(primary_key=True)
     photo = models.ImageField(upload_to='sudoku_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    reshaped_image = models.ForeignKey(ProcessedImage, on_delete=models.CASCADE, blank=True, null=True)
+    board = models.ForeignKey(SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # call the parent class's save.

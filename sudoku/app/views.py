@@ -106,41 +106,6 @@ def display_constrast_view(request):
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
 
 
-def plot_image_view(request, pk):
-    step = request.GET.get('step')
-    # Retrieve the sudoku instance
-    sudoku = get_object_or_404(Sudoku, pk=pk)
-
-    # All image preparation happens inside Sudoku class
-    contrasted_image, reshaped_image, gray_image, image, image_with_contours = sudoku.prepare_images()
-
-    request.session['board-image'] = contrasted_image.tolist()
-
-    fig = generate_fig(step, gray_image, image_with_contours,
-                       reshaped_image, contrasted_image, image)
-
-    fig.update_layout(width=300, height=300, margin=dict(
-        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
-    fig.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
-
-    plot_context = {'plot': fig.to_html()}
-    return render(request, 'app/partials/plot.html', context=plot_context)
-
-
-def generate_fig(step, gray_image, image_with_contours, reshaped_image, contrasted_image, image):
-    # Simplified conditional logic
-    if step == 'gray':
-        return px.imshow(gray_image, binary_string=True)
-    elif step == 'find-contours':
-        return px.imshow(image_with_contours)
-    elif step == 'reshape':
-        return px.imshow(reshaped_image)
-    elif step == 'remove-contrast':
-        return px.imshow(contrasted_image)
-    else:
-        return px.imshow(image)
-
-
 def fill_board_view(request):
     # Get board image from session
     board_image_list = request.session.get('board-image')

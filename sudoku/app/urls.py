@@ -12,7 +12,10 @@ urlpatterns = [
 
 htmx_urlpatterns = [
     path('display-original/', views.display_original_view, name='display-original'),
-    path('display-grayscale/', views.display_grayscale_view, name='display-grayscale'),
+    path('display-grayscale/', views.display_grayscale_view,
+         name='display-grayscale'),
+    path('display-contours/', views.display_contour_view, name='display-contours'),
+    path('display-warp/', views.display_warp_view, name='display-warp'),
     path('<int:pk>/plot-image/', views.plot_image_view, name='plot-image'),
     path('fill-board/', views.fill_board_view, name='prepare-board'),
     path('update_cell', views.update_cell, name='update_cell'),

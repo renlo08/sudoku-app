@@ -18,7 +18,7 @@ admin.site.register(Sudoku, SudokuAdmin)
 
 class BoardAdmin(admin.ModelAdmin):
     list_display = ('id', 'sudoku', 'has_grayscale_data', 
-                    'has_countour_data', 'has_reshaped_data', 'has_contrasted_data')
+                    'has_contour_data', 'has_warp_data', 'has_contrasted_data')
 
     def preview(self, obj):
         return format_html('<img src="{}" width="50" height="50" />', obj.sudoku.photo.url)

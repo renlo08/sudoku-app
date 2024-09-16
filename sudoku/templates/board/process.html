@@ -8,10 +8,10 @@
         <a hx-get="{% url 'app:display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:plot-image' object.pk %}?step=find-contours" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
+        <a hx-get="{% url 'app:display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:plot-image' object.pk %}?step=reshape" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
+        <a hx-get="{% url 'app:display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
       </li>
       <li>
         <a hx-get="{% url 'app:plot-image' object.pk %}?step=remove-contrast" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>

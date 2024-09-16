@@ -1,4 +1,5 @@
 import io
+import json
 from os import path
 import typing
 
@@ -17,20 +18,22 @@ class Sudoku(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        # call the parent class's save.
-        super().save(*args, **kwargs)
+        # Check if the instance is being created (i.e., it doesn't have an ID yet)
+        if not self.id:
+            # Open the image using the file object
+            img = Image.open(self.photo)
+            img.thumbnail(size=(300, 300))
+            output = io.BytesIO()
+            img.save(output, format=img.format, quality=90)
+            output.seek(0)
 
-        # Open the image using its path and resize
-        img = Image.open(self.photo.path)
-        img.thumbnail(size=(300, 300))
-        output = io.BytesIO()
-        img.save(output, format=img.format, quality=90)
-        output.seek(0)
+            # Get the filename from the original file
+            filename = path.basename(self.photo.name)
 
-        # get the filename from the path
-        filename = path.basename(self.photo.name)
+            # Replace the original photo with the resized image
+            self.photo = ContentFile(output.read(), filename)
 
-        self.photo = ContentFile(output.read(), filename)
+        # Call the parent class's save method
         super().save(*args, **kwargs)
 
     def process_board(self):
@@ -74,6 +77,7 @@ class Sudoku(models.Model):
         contrasted_image = utils.contrasted_image(reshaped_image)
         return contrasted_image, reshaped_image, gray_image, image, image_with_contours
 
+
 class ProcessedData(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -85,36 +89,43 @@ class ProcessedData(models.Model):
             self.data = np.array(self.data).tolist()
         super().save(*args, **kwargs)
 
+
 class SudokuBoard(models.Model):
     id = models.AutoField(primary_key=True)
     data = models.JSONField(default=dict, null=True, blank=True)
     grayscale_data = models.JSONField(default=dict, null=True, blank=True)
-    countour_data = models.JSONField(default=dict, null=True, blank=True)
-    reshaped_data = models.JSONField(default=dict, null=True, blank=True)
+    contours = models.TextField(null=True, blank=True)
+    warp_data = models.JSONField(default=dict, null=True, blank=True)
     contrasted_data = models.JSONField(default=dict, null=True, blank=True)
-    sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE, blank=True, null=True)
-    
+    sudoku = models.ForeignKey(
+        Sudoku, on_delete=models.CASCADE, blank=True, null=True)
+
     def save(self, *args, **kwargs):
         if not self.data:
             self.data = self.convert_as_array().tolist()
+        if isinstance(self.contours, tuple):
+            contours = [contour.tolist() for contour in self.contours]
+            self.contours = json.dumps(contours)
+        if isinstance(self.warp_data, np.ndarray):
+            self.warp_data = self.warp_data.tolist()
         super().save(*args, **kwargs)
-    
+
     @property
     def has_grayscale_data(self):
         return bool(self.grayscale_data)
 
     @property
-    def has_countour_data(self):
-        return bool(self.countour_data)
-    
+    def has_contour_data(self):
+        return bool(self.contours)
+
     @property
-    def has_reshaped_data(self):
-        return bool(self.reshaped_data)
-    
+    def has_warp_data(self):
+        return bool(self.warp_data)
+
     @property
     def has_contrasted_data(self):
         return bool(self.contrasted_data)
-    
+
     def generate_data(self, name: str, process_func: typing.Callable):
         """ Get or create the original data """
         setattr(self, name, process_func())
@@ -130,23 +141,44 @@ class SudokuBoard(models.Model):
 
         # Convert PIL image to OpenCV format (numpy array)
         return np.array(img)
-        
 
     def convert_to_gray(self):
         # Convert original data to gray scale
         return cv2.cvtColor(self.get_original_data(), cv2.COLOR_BGR2GRAY)
 
-    def process_grayscale(self):
-        self.generate_data('grayscale_data', self.convert_to_gray)
+    def draw_contours(self):
+        # Find contours on the grayscale image and save them
+        self.contours = utils.find_contours(self.get_grayscale_data())
+        self.save()
+
+    def warp_image(self):
+        # Find the largest contour and warp the image
+        largest_contour, _ = utils.find_largest_quadrilateral_contour(
+            self.get_contour_data())
+        if largest_contour.size != 0:
+            self.warp_data = utils.warp_image(
+                largest_contour, self.get_original_data())
+            self.save()
+        raise ValueError("Cannot find a suitable contour in the image.")
 
     def get_original_data(self):
         return np.array(self.data).astype(np.uint8)
 
     def get_grayscale_data(self):
-        if not self.has_grayscale_data:
-            self.process_grayscale()
-        return np.array(self.grayscale_data)
-    
+        return cv2.cvtColor(self.get_original_data(), cv2.COLOR_BGR2GRAY).astype(np.uint8)
+
+    def get_contour_data(self):
+        if not self.has_contour_data:
+            self.draw_contours()
+        contours = tuple(np.array(contour)
+                         for contour in json.loads(self.contours))
+        return contours
+
+    def get_warp_data(self):
+        if not self.has_warp_data:
+            self.warp_image()
+        return np.array(self.warp_data).astype(np.uint8)
+
     def process_image(self):
         image = self.convert_as_array()
 
@@ -159,21 +191,18 @@ class SudokuBoard(models.Model):
         return processed_image
 
 
-
 class BoardCell(models.Model):
     id = models.AutoField(primary_key=True)
     row = models.IntegerField()
     col = models.IntegerField()
-    data = models.ForeignKey(ProcessedData, on_delete=models.CASCADE, blank=True, null=True)
+    data = models.ForeignKey(
+        ProcessedData, on_delete=models.CASCADE, blank=True, null=True)
     predicted_value = models.CharField(max_length=1, blank=True, null=True)
-    board = models.ForeignKey(SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
-    
+    board = models.ForeignKey(
+        SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
+
     def save(self, *args, **kwargs):
         if self.data:
             # Ensure that the Zone Of Interest is a python list (np.array)
             self.data = np.array(self.data).tolist()
         super().save(*args, **kwargs)
-
-
-
-

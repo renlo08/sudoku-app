@@ -29,51 +29,66 @@ def slugify_instance_name(instance, save=False, new_slug=None):
     return instance
 
 
-def detect_contours(image):
-    """
-    Find all the outline contours present in the image.
-    :param image: the original image before processing.
-    """
-    processed_image = image.process_image()
-    contoured_image = image.convert_as_array()
-    contours, hierarchy = cv2.findContours(processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    cv2.drawContours(contoured_image, contours, -1, (0, 255, 0), 2)
-    return contoured_image, contours, hierarchy
+def find_contours(image):
+    """Find all the outline contours present in the image."""
+    # Apply thresholding to create a binary image
+    processed_image = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                            cv2.THRESH_BINARY, 11, 2)
+    # OpenCV findContour can require black background and white foreground, thus invert color.
+    processed_image = cv2.bitwise_not(processed_image)
+
+    # Find contours in the image
+    contours, _ = cv2.findContours(
+        processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    return contours
 
 
-def main_outline_contours(contours):
-    biggest = np.array([])
+def find_largest_quadrilateral_contour(contours):
+    """
+    Find the largest quadrilateral contour from a list of contours.
+
+    :param contours: List of contours to search through.
+    :return: The largest quadrilateral contour and its area.
+    """
+    largest_contour = np.array([])
     max_area = 0
 
-    # Reorder the contours in reverse order (by area) to speed up the research of main outline contour.
-    ordered_contour = sorted(contours, key=cv2.contourArea, reverse=True)
-    for c in ordered_contour:
-        # Calculate the contour area
-        area = cv2.contourArea(c)
-        # Approximate the contour
-        peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
-        # Check if the contour area is bigger than the biggest until now
-        # the contour must have only four approximated points typically indicating rectangular or square-like shapes
-        # (or other four-sided polygons)
+    # Sort contours by area in descending order to prioritize larger contours.
+    sorted_contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+    for contour in sorted_contours:
+        # Calculate the contour area.
+        area = cv2.contourArea(contour)
+
+        # Approximate the contour to reduce the number of points.
+        perimeter = cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, 0.02 * perimeter, True)
+
+        # Check if the contour is the largest found so far and has four points.
         if area > max_area and len(approx) == 4:
-            biggest = approx
+            largest_contour = approx
             max_area = area
-    return biggest, max_area
+
+    return largest_contour, max_area
 
 
-def reframe_outline_contours(points):
-    """  """
+def reorder_contour_points(points):
+    """
+    Reorder the contour points to a consistent order: top-left, top-right, bottom-right, bottom-left.
+
+    :param points: A numpy array of shape (4, 2) representing the contour points.
+    :return: A numpy array of shape (4, 1, 2) with the reordered contour points.
+    """
     points = points.reshape((4, 2))
-    reframe_points = np.zeros((4, 1, 2), dtype=np.int32)
+    reordered_points = np.zeros((4, 1, 2), dtype=np.int32)
 
     add = points.sum(axis=1)
-    reframe_points[0] = points[np.argmin(add)]
-    reframe_points[3] = points[np.argmax(add)]
+    reordered_points[0] = points[np.argmin(add)]
+    reordered_points[3] = points[np.argmax(add)]
     diff = np.diff(points, axis=1)
-    reframe_points[1] = points[np.argmin(diff)]
-    reframe_points[2] = points[np.argmax(diff)]
-    return reframe_points
+    reordered_points[1] = points[np.argmin(diff)]
+    reordered_points[2] = points[np.argmax(diff)]
+    return reordered_points
 
 
 def split_sudoku_cells(image):
@@ -89,24 +104,34 @@ def split_sudoku_cells(image):
     return cells
 
 
-def reshape_image(contours, image):
+def warp_image(largest_contour, image):
+    """
+    Extract the biggest contour, reorder its points, and apply a perspective transform to obtain a top-down view.
+
+    :param largest_contour: The largest contour found in the image.
+    :param image: The original image.
+    :return: The transformed image with a top-down view of the biggest contour.
+    """
+    # Reorder the contour points to a consistent order: top-left, top-right, bottom-right, bottom-left.
+    largest_contour = reorder_contour_points(largest_contour)
+
+    # Draw the reordered contour on the image copy.
     image_copy = image.copy()
-    biggest_contour, max_area = main_outline_contours(contours)
-    if biggest_contour.size != 0:
-        return _extracted_from_reshape_image(biggest_contour, image_copy, image)
-    raise ValueError("Cannot find a suitable contour in the image.")
+    cv2.drawContours(image_copy, [largest_contour], -1, (0, 0, 255), 10)
 
-
-def _extracted_from_reshape_image(biggest_contour, image_copy, image):
-    biggest_contour = reframe_outline_contours(biggest_contour)
-    cv2.drawContours(image_copy, biggest_contour, -1, (0, 0, 255), 10)
-    pts_1 = np.float32(biggest_contour)
+    # Define the points for perspective transformation.
+    pts_1 = np.float32(largest_contour)
     pts_2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
+
+    # Get the perspective transformation matrix.
     matrix = cv2.getPerspectiveTransform(pts_1, pts_2)
+
+    # Apply the perspective transformation to get a top-down view.
     image_wrap = cv2.warpPerspective(image, matrix, (306, 306))
+
+    # Convert the transformed image to grayscale.
     image_wrap = cv2.cvtColor(image_wrap, cv2.COLOR_BGR2GRAY)
 
-    # Make sure that the image in row
     return image_wrap
 
 
@@ -127,7 +152,8 @@ def prepare_cell_for_classification(cell):
 
 
 def get_predicted_board(classifier, cropped_cells):
-    prepared_cells = np.concatenate([prepare_cell_for_classification(cell) for cell in cropped_cells])
+    prepared_cells = np.concatenate(
+        [prepare_cell_for_classification(cell) for cell in cropped_cells])
 
     predictions = classifier.predict(prepared_cells)
     return predictions.tolist()

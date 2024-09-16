@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import plotly.express as px
 from django.http import HttpResponse
@@ -34,15 +35,18 @@ def reload_view(request):
 
     return redirect('home')
 
+
 def display_original_view(request):
     board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
     data = board_obj.get_original_data()
     figure = px.imshow(data)
     figure.update_layout(width=300, height=300, margin=dict(
         l=10, r=10, b=10, t=10), coloraxis_showscale=False)
-    figure.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(
+        showticklabels=False)
     figure_html = figure.to_html()
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
 
 def display_grayscale_view(request):
     board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
@@ -50,9 +54,46 @@ def display_grayscale_view(request):
     figure = px.imshow(data, binary_string=True)
     figure.update_layout(width=300, height=300, margin=dict(
         l=10, r=10, b=10, t=10), coloraxis_showscale=False)
-    figure.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(
+        showticklabels=False)
     figure_html = figure.to_html()
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
+
+def display_contour_view(request):
+    board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+    # Get the contours from the board object
+    contours = board_obj.get_contour_data()
+
+    # Draw the contours on the original image
+    data = board_obj.get_original_data()
+    cv2.drawContours(data, contours, -1, (0, 255, 0), 2)
+
+    # Create a plotly figure
+    figure = px.imshow(data)
+    figure.update_layout(width=300, height=300, margin=dict(
+        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(
+        showticklabels=False)
+    figure_html = figure.to_html()
+
+    return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
+
+def display_warp_view(request):
+    try:
+        board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+        data = board_obj.get_warp_data()
+        figure = px.imshow(data)
+        figure.update_layout(width=300, height=300, margin=dict(
+            l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+        figure.update_xaxes(showticklabels=False).update_yaxes(
+            showticklabels=False)
+        figure_html = figure.to_html()
+        return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+    except ValueError as e:
+        return render(request, 'board/partials/draw.html', context={'error': str(e)})
+
 
 def plot_image_view(request, pk):
     step = request.GET.get('step')

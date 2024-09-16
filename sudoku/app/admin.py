@@ -1,10 +1,10 @@
 from django.utils.html import format_html
 from django.contrib import admin
 
-from app.models import Sudoku
+from app.models import Sudoku, SudokuBoard
 
 
-class ImageAdmin(admin.ModelAdmin):
+class SudokuAdmin(admin.ModelAdmin):
     list_display = ('id', 'uploaded_at', 'preview')
 
     def preview(self, obj):
@@ -13,4 +13,16 @@ class ImageAdmin(admin.ModelAdmin):
     preview.short_description = 'Preview'
 
 
-admin.site.register(Sudoku, ImageAdmin)
+admin.site.register(Sudoku, SudokuAdmin)
+
+
+class BoardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sudoku', 'has_grayscale_data', 
+                    'has_countour_data', 'has_reshaped_data', 'has_contrasted_data')
+
+    def preview(self, obj):
+        return format_html('<img src="{}" width="50" height="50" />', obj.sudoku.photo.url)
+
+    preview.short_description = 'Preview'
+
+admin.site.register(SudokuBoard, BoardAdmin)

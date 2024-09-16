@@ -1,28 +1,24 @@
-{% extends 'index.html' %}
+<div id="imageProcessing">
+  <nav>
+    <ul>
+      <li>
+        <a hx-get="{% url 'app:display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML" >Montrer l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:plot-image' object.pk %}?step=find-contours" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:plot-image' object.pk %}?step=reshape" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:plot-image' object.pk %}?step=remove-contrast" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
+      </li>
+    </ul>
+  </nav>
 
-{% block board_processing %}
-  <div id="imageProcessing">
-    <nav>
-      <ul>
-        <li>
-          <a hx-get="{% url 'app:plot-image' image.pk %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
-        </li>
-        <li>
-          <a hx-get="{% url 'app:plot-image' image.pk %}?step=gray" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
-        </li>
-        <li>
-          <a hx-get="{% url 'app:plot-image' image.pk %}?step=find-contours" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
-        </li>
-        <li>
-          <a hx-get="{% url 'app:plot-image' image.pk %}?step=reshape" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
-        </li>
-        <li>
-          <a hx-get="{% url 'app:plot-image' image.pk %}?step=remove-contrast" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
-        </li>
-      </ul>
-    </nav>
-
-    <div id="image-container"></div>
-  </div>
-  <button hx-get="{% url 'app:prepare-board' %}" hx-target="#board-container" hx-trigger="click" hx-swap="innerHTML">Initialiser la grille</button>
-{% endblock %}
+  <div id="image-container"></div>
+</div>
+<button hx-get="{% url 'app:prepare-board' %}" hx-target="#board-container" hx-trigger="click" hx-swap="innerHTML">Initialiser la grille</button>

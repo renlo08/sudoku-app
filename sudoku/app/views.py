@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from app.forms import UploadForm
-from app.models import Sudoku
+from app.models import Sudoku, SudokuBoard
 from app import utils
 
 
@@ -12,11 +12,14 @@ def upload_view(request):
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            new_image = Sudoku(photo=request.FILES['photo'])
-            new_image.save()  # Save the image so we can access it later
+            sudoku_obj = Sudoku(photo=request.FILES['photo'])
+            sudoku_obj.save()  # Save the image so we can access it later
 
             # store the image PK in session
-            request.session['pk'] = new_image.pk
+            request.session['pk'] = sudoku_obj.pk
+
+            # create the sudoku board instance and process the image
+            sudoku_obj.process_board()
 
         else:
             request.session['uploadForm'] = form
@@ -31,6 +34,25 @@ def reload_view(request):
 
     return redirect('home')
 
+def display_original_view(request):
+    board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+    data = board_obj.get_original_data()
+    figure = px.imshow(data)
+    figure.update_layout(width=300, height=300, margin=dict(
+        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
+    figure_html = figure.to_html()
+    return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
+def display_grayscale_view(request):
+    board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+    data = board_obj.get_grayscale_data()
+    figure = px.imshow(data, binary_string=True)
+    figure.update_layout(width=300, height=300, margin=dict(
+        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(showticklabels=False)
+    figure_html = figure.to_html()
+    return render(request, 'board/partials/draw.html', context={'figure': figure_html})
 
 def plot_image_view(request, pk):
     step = request.GET.get('step')

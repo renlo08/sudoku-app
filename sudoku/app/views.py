@@ -94,6 +94,17 @@ def display_warp_view(request):
     except ValueError as e:
         return render(request, 'board/partials/draw.html', context={'error': str(e)})
 
+def display_constrast_view(request):
+    board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+    data = cv2.adaptiveThreshold(board_obj.get_warp_data(), 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    figure = px.imshow(data)
+    figure.update_layout(width=300, height=300, margin=dict(
+        l=10, r=10, b=10, t=10), coloraxis_showscale=False)
+    figure.update_xaxes(showticklabels=False).update_yaxes(
+        showticklabels=False)
+    figure_html = figure.to_html()
+    return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
 
 def plot_image_view(request, pk):
     step = request.GET.get('step')

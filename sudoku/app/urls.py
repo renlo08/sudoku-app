@@ -16,6 +16,7 @@ htmx_urlpatterns = [
          name='display-grayscale'),
     path('display-contours/', views.display_contour_view, name='display-contours'),
     path('display-warp/', views.display_warp_view, name='display-warp'),
+    path('display-constrast/', views.display_constrast_view, name='display-constrast'),
     path('<int:pk>/plot-image/', views.plot_image_view, name='plot-image'),
     path('fill-board/', views.fill_board_view, name='prepare-board'),
     path('update_cell', views.update_cell, name='update_cell'),

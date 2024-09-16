@@ -126,21 +126,16 @@ class SudokuBoard(models.Model):
     def has_contrasted_data(self):
         return bool(self.contrasted_data)
 
-    def generate_data(self, name: str, process_func: typing.Callable):
-        """ Get or create the original data """
-        setattr(self, name, process_func())
-        # Convert numpy array to list before saving
-        setattr(self, name, getattr(self, name).tolist())
-        self.save()
-
     def convert_as_array(self):
+        # Ensure the photo file is at the beginning
         self.sudoku.photo.seek(0)
 
         # Open the image file
-        img = Image.open(self.sudoku.photo.path)
+        with Image.open(self.sudoku.photo) as img:
+            # Convert PIL image to OpenCV format (numpy array)
+            img_array = np.array(img)
 
-        # Convert PIL image to OpenCV format (numpy array)
-        return np.array(img)
+        return img_array
 
     def convert_to_gray(self):
         # Convert original data to gray scale
@@ -170,25 +165,13 @@ class SudokuBoard(models.Model):
     def get_contour_data(self):
         if not self.has_contour_data:
             self.draw_contours()
-        contours = tuple(np.array(contour)
+        return tuple(np.array(contour)
                          for contour in json.loads(self.contours))
-        return contours
 
     def get_warp_data(self):
         if not self.has_warp_data:
             self.warp_image()
         return np.array(self.warp_data).astype(np.uint8)
-
-    def process_image(self):
-        image = self.convert_as_array()
-
-        # Apply thresholding to create a binary image
-        # _, processed_image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        processed_image = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                                cv2.THRESH_BINARY, 11, 2)
-        # OpenCV findContour can require black background and white foreground, thus invert color.
-        processed_image = cv2.bitwise_not(processed_image)
-        return processed_image
 
 
 class BoardCell(models.Model):

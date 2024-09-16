@@ -14,7 +14,7 @@
         <a hx-get="{% url 'app:display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:plot-image' object.pk %}?step=remove-contrast" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
+        <a hx-get="{% url 'app:display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
       </li>
     </ul>
   </nav>

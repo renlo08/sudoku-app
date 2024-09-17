@@ -1,9 +1,11 @@
+import base64
 import io
 import json
 from os import path
 import typing
 
 import cv2
+from django.urls import reverse
 import numpy as np
 from PIL import Image
 from django.core.files.base import ContentFile
@@ -78,18 +80,6 @@ class Sudoku(models.Model):
         return contrasted_image, reshaped_image, gray_image, image, image_with_contours
 
 
-class ProcessedData(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    data = models.JSONField(default=dict)  # Zone Of Interest
-
-    def save(self, *args, **kwargs):
-        if self.data:
-            # Ensure that the Zone Of Interest is a python list (np.array)
-            self.data = np.array(self.data).tolist()
-        super().save(*args, **kwargs)
-
-
 class SudokuBoard(models.Model):
     id = models.AutoField(primary_key=True)
     data = models.JSONField(default=dict, null=True, blank=True)
@@ -108,6 +98,8 @@ class SudokuBoard(models.Model):
             self.contours = json.dumps(contours)
         if isinstance(self.warp_data, np.ndarray):
             self.warp_data = self.warp_data.tolist()
+        if isinstance(self.contrasted_data, np.ndarray):
+            self.contrasted_data = self.contrasted_data.tolist()
         super().save(*args, **kwargs)
 
     @property
@@ -154,7 +146,12 @@ class SudokuBoard(models.Model):
             self.warp_data = utils.warp_image(
                 largest_contour, self.get_original_data())
             self.save()
+            return
         raise ValueError("Cannot find a suitable contour in the image.")
+
+    def constrast_image(self):
+        self.contrasted_data = cv2.adaptiveThreshold(self.get_warp_data(), 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        self.save()
 
     def get_original_data(self):
         return np.array(self.data).astype(np.uint8)
@@ -172,20 +169,101 @@ class SudokuBoard(models.Model):
         if not self.has_warp_data:
             self.warp_image()
         return np.array(self.warp_data).astype(np.uint8)
+    
+    def get_contrasted_data(self):
+        if not self.has_contrasted_data:
+            self.constrast_image()
+        return np.array(self.contrasted_data).astype(np.uint8)
+    
+    def extract_cells_from_image(self):
+        """ Extract the cells from the warped image """
+
+        # Initialize the model for classification
+        model = utils.get_classification_model()
+
+        # Prepare the cell images for classification
+        images = utils.split_sudoku_cells(self.get_warp_data())
+        cropped_cells = utils.extract_cells(self.get_warp_data())
+        
+        cells = utils.extract_cells(self.get_warp_data())
+        return cells
+    
+    def get_cell(self, row, col):
+        return BoardCell.objects.get(row=row, col=col, board=self)
+
+class BoardCellQuerySet(models.QuerySet):
+    def get_or_create_cells(self, board):
+        cells = []
+        for row in range(1, 10):
+            for col in range(1, 10):
+                cell, _ = self.get_or_create(row=row, col=col, board=board)
+                cells.append(cell)
+        # Ensure the cells are ordered by row and col
+        return sorted(cells, key=lambda cell: (cell.row, cell.col))
+
+class BoardCellManager(models.Manager):
+    def get_queryset(self):
+        return BoardCellQuerySet(self.model, using=self._db)
+
+    def get_or_create_cells(self, board):
+        return self.get_queryset().get_or_create_cells(board)
 
 
 class BoardCell(models.Model):
     id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     row = models.IntegerField()
     col = models.IntegerField()
-    data = models.ForeignKey(
-        ProcessedData, on_delete=models.CASCADE, blank=True, null=True)
-    predicted_value = models.CharField(max_length=1, blank=True, null=True)
+    predicted_value = models.IntegerField(blank=True, null=True)
+    value = models.IntegerField(blank=True, null=True)
     board = models.ForeignKey(
         SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        if self.data:
-            # Ensure that the Zone Of Interest is a python list (np.array)
-            self.data = np.array(self.data).tolist()
-        super().save(*args, **kwargs)
+    objects = BoardCellManager()
+
+    @property
+    def index(self):
+        return self.row * 9 + self.col
+    
+    @property
+    def roi(self):
+        return self.get_roi()
+    
+    @property
+    def uri(self):
+        image = Image.fromarray(self.roi)
+        image_io = io.BytesIO()
+        image.save(image_io, "PNG")
+        return base64.b64encode(image_io.getvalue()).decode('utf-8')
+    
+    def get_roi(self):
+        image = self.board.get_contrasted_data()
+
+        # Resize the image so that its dimensions are divisible by 9
+        new_height = (image.shape[0] // 9) * 9
+        new_width = (image.shape[1] // 9) * 9
+
+        image = cv2.resize(image, (new_width, new_height))
+        cell_height = image.shape[0] // 9
+        cell_width = image.shape[1] // 9
+        # Adjust row and col to be zero-indexed
+        row = self.row - 1
+        col = self.col - 1
+        start_row = row * cell_height
+        end_row = (row + 1) * cell_height
+        start_col = col * cell_width
+        end_col = (col + 1) * cell_width
+
+        # Ensure the ROI is within the image boundaries
+        end_row = min(end_row, image.shape[0])
+        end_col = min(end_col, image.shape[1])
+
+        return image[start_row:end_row, start_col:end_col]
+    
+    def get_prediction(self):
+        model = utils.get_classification_model()
+        cell = self.get_roi()
+
+    
+

@@ -1,11 +1,22 @@
 {% load custom_app_tags %}
 
-<img src="data:image/png;base64, {{ cells_uri }}" alt="cell-{{ cell_index }}">
-<p>{{ cell_value }}</p>
-<select>
-    <option value="{{cell_value}}"> </option>
-    {% for i in 1|to:9 %}
-        <option value="{{ i }}" {% if cell_value == i %}selected{% endif %}>{{ i }}</option>
-    {% endfor %}
-</select>
-<br>
+{% if cell.col == 1 %}
+    <tr>
+{% endif %}
+<td>
+    <img src="data:image/png;base64, {{ cell.uri }}" alt="cell-{{ cell.index }}">
+    <p>valeur prédit:</p>
+    <p>{{ cell.predicted_value }}</p>
+    <p>valeur corrigé:</p>
+    <select class="user-value">
+        <option value="{{cell.predicted_value}}"> </option>
+        {% for i in 1|to:9 %}
+            <option value="{{ i }}" {% if cell.predicted_value == i %}selected{% endif %}>{{ i }}</option>
+        {% endfor %}
+    </select>
+    <br>
+</td>
+{% if cell.col == 9 %}
+    </tr>
+{% endif %}
+

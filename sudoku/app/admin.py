@@ -1,7 +1,7 @@
 from django.utils.html import format_html
 from django.contrib import admin
 
-from app.models import Sudoku, SudokuBoard
+from app.models import BoardCell, Sudoku, SudokuBoard
 
 
 class SudokuAdmin(admin.ModelAdmin):
@@ -26,3 +26,8 @@ class BoardAdmin(admin.ModelAdmin):
     preview.short_description = 'Preview'
 
 admin.site.register(SudokuBoard, BoardAdmin)
+
+class BoardCellAdmin(admin.ModelAdmin):
+    list_display = ('id', 'row', 'col', 'board')
+
+admin.site.register(BoardCell, BoardCellAdmin)

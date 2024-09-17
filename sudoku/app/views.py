@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from app.forms import UploadForm
-from app.models import Sudoku, SudokuBoard
+from app.models import BoardCell, Sudoku, SudokuBoard
 from app import utils
 
 
@@ -96,14 +96,20 @@ def display_warp_view(request):
 
 def display_constrast_view(request):
     board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
-    data = cv2.adaptiveThreshold(board_obj.get_warp_data(), 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    figure = px.imshow(data)
+    figure = px.imshow(board_obj.get_contrasted_data())
     figure.update_layout(width=300, height=300, margin=dict(
         l=10, r=10, b=10, t=10), coloraxis_showscale=False)
     figure.update_xaxes(showticklabels=False).update_yaxes(
         showticklabels=False)
     figure_html = figure.to_html()
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
+
+def extract_board_view(request):
+    if request.method == 'GET':
+        # Get the board cells from the database
+        board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+        cells = BoardCell.objects.get_or_create_cells(board=board_obj)
+    return redirect('home')
 
 
 def fill_board_view(request):

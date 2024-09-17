@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from app.forms import UploadForm
-from app.models import Sudoku
+from app.models import BoardCell, Sudoku, SudokuBoard
 
 
 def index(request):
@@ -14,4 +14,7 @@ def index(request):
             context['object'] = Sudoku.objects.get(pk=pk)
         except Sudoku.DoesNotExist:
             context['object'] = None
+        board_obj = SudokuBoard.objects.get(sudoku__pk=pk)
+        context['cells'] = BoardCell.objects.get_or_create_cells(board=board_obj)
+        # context['cell'] = BoardCell.objects.get_or_create_cells(board=board_obj)[2]
     return render(request, 'index.html', context=context)

@@ -8,6 +8,8 @@ app_name = 'app'
 urlpatterns = [
     path('upload/', views.upload_view, name='upload'),
     path('reload/', views.reload_view, name='reload'),
+    path('extract/', views.extract_board_view, name='extract-board'),
+
 ]
 
 htmx_urlpatterns = [
@@ -19,7 +21,6 @@ htmx_urlpatterns = [
     path('display-constrast/', views.display_constrast_view, name='display-constrast'),
     path('fill-board/', views.fill_board_view, name='prepare-board'),
     path('update_cell', views.update_cell, name='update_cell'),
-    path('edit/', views.edit_board, name='edit_board'),
 ]
 
 urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)

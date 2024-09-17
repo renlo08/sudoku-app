@@ -41,22 +41,36 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.querySelector('.toggle-dropdown')
+    const toggleButton = document.querySelector('.toggle-dropdown');
   
-    // Hide all dropdowns when the page loads
-    const dropdowns = document.querySelectorAll('.user-value')
-    dropdowns.forEach((dropdown) => {
-      dropdown.style.display = 'none'
-    })
+    // Hide all editBoardValue and show all frozenBoardValue when the page loads
+    const editDropdowns = document.querySelectorAll('.editBoardValue');
+    const frozenDropdowns = document.querySelectorAll('.frozenBoardValue');
+    
+    editDropdowns.forEach((dropdown) => {
+      dropdown.style.display = 'none';
+    });
+    
+    frozenDropdowns.forEach((dropdown) => {
+      dropdown.style.display = 'block';
+    });
   
     toggleButton.addEventListener('click', function () {
-      dropdowns.forEach((dropdown) => {
+      editDropdowns.forEach((dropdown) => {
         if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-          dropdown.style.display = 'block'
+          dropdown.style.display = 'block';
         } else {
-          dropdown.style.display = 'none'
+          dropdown.style.display = 'none';
         }
-      })
-    })
-  })
+      });
+      
+      frozenDropdowns.forEach((dropdown) => {
+        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+          dropdown.style.display = 'block';
+        } else {
+          dropdown.style.display = 'none';
+        }
+      });
+    });
+  });
 </script>

@@ -10,6 +10,7 @@ import numpy as np
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db import models
+from tensorflow.keras import preprocessing
 
 from app import utils
 
@@ -91,16 +92,28 @@ class SudokuBoard(models.Model):
         Sudoku, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        self._convert_data_to_list()
+        self._convert_contours_to_json()
+        self._convert_warp_data_to_list()
+        self._convert_contrasted_data_to_list()
+        super().save(*args, **kwargs)
+
+    def _convert_data_to_list(self):
         if not self.data:
             self.data = self.convert_as_array().tolist()
+
+    def _convert_contours_to_json(self):
         if isinstance(self.contours, tuple):
             contours = [contour.tolist() for contour in self.contours]
             self.contours = json.dumps(contours)
+
+    def _convert_warp_data_to_list(self):
         if isinstance(self.warp_data, np.ndarray):
             self.warp_data = self.warp_data.tolist()
+
+    def _convert_contrasted_data_to_list(self):
         if isinstance(self.contrasted_data, np.ndarray):
             self.contrasted_data = self.contrasted_data.tolist()
-        super().save(*args, **kwargs)
 
     @property
     def has_grayscale_data(self):
@@ -175,21 +188,6 @@ class SudokuBoard(models.Model):
             self.constrast_image()
         return np.array(self.contrasted_data).astype(np.uint8)
     
-    def extract_cells_from_image(self):
-        """ Extract the cells from the warped image """
-
-        # Initialize the model for classification
-        model = utils.get_classification_model()
-
-        # Prepare the cell images for classification
-        images = utils.split_sudoku_cells(self.get_warp_data())
-        cropped_cells = utils.extract_cells(self.get_warp_data())
-        
-        cells = utils.extract_cells(self.get_warp_data())
-        return cells
-    
-    def get_cell(self, row, col):
-        return BoardCell.objects.get(row=row, col=col, board=self)
 
 class BoardCellQuerySet(models.QuerySet):
     def get_or_create_cells(self, board):
@@ -207,6 +205,8 @@ class BoardCellManager(models.Manager):
 
     def get_or_create_cells(self, board):
         return self.get_queryset().get_or_create_cells(board)
+    
+
 
 
 class BoardCell(models.Model):
@@ -260,6 +260,10 @@ class BoardCell(models.Model):
         end_col = min(end_col, image.shape[1])
 
         return image[start_row:end_row, start_col:end_col]
+    
+    def prepare_roi_for_classification(self):
+        roi = np.array(cv2.resize(self.roi, (32, 32)).astype("float") / 255.0)
+        return np.expand_dims(preprocessing.image.img_to_array(roi), axis=0)
     
     def get_prediction(self):
         model = utils.get_classification_model()

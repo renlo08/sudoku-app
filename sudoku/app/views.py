@@ -109,6 +109,19 @@ def extract_board_view(request):
         # Get the board cells from the database
         board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
         cells = BoardCell.objects.get_or_create_cells(board=board_obj)
+        # Prepare the model for classification
+        model = utils.get_classification_model()
+
+        # Extract the cells from the image
+        model_input = np.concatenate([cell.prepare_roi_for_classification() for cell in cells])
+        
+        # Predict the digits in the cells
+        predictions = model.predict(model_input).tolist()
+        
+        # Save the predictions to the cells
+        for cell, prediction in zip(cells, predictions):
+            cell.predicted_value = prediction
+            cell.save()
     return redirect('home')
 
 

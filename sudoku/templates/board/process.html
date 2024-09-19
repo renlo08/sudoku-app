@@ -1,4 +1,6 @@
 {% load custom_app_tags %}
+{% load static %}
+<script src="{% static 'js/board.js' %}" defer></script>
 
 <div id="imageProcessing">
   <nav>
@@ -37,40 +39,6 @@
 {% endif %}
 
 <!-- Single Toggle Button Outside the Table -->
-<button class="toggle-dropdown">Toggle All Dropdowns</button>
+<button class="editBoard">Modifier</button>
+<button class="saveBoard">Sauvegarder</button>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.querySelector('.toggle-dropdown');
-  
-    // Hide all editBoardValue and show all frozenBoardValue when the page loads
-    const editDropdowns = document.querySelectorAll('.editBoardValue');
-    const frozenDropdowns = document.querySelectorAll('.frozenBoardValue');
-    
-    editDropdowns.forEach((dropdown) => {
-      dropdown.style.display = 'none';
-    });
-    
-    frozenDropdowns.forEach((dropdown) => {
-      dropdown.style.display = 'block';
-    });
-  
-    toggleButton.addEventListener('click', function () {
-      editDropdowns.forEach((dropdown) => {
-        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-          dropdown.style.display = 'block';
-        } else {
-          dropdown.style.display = 'none';
-        }
-      });
-      
-      frozenDropdowns.forEach((dropdown) => {
-        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-          dropdown.style.display = 'block';
-        } else {
-          dropdown.style.display = 'none';
-        }
-      });
-    });
-  });
-</script>

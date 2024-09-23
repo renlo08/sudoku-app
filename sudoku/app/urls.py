@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 
 from app import views
 from sudoku import utils
@@ -23,4 +25,8 @@ htmx_urlpatterns = [
     path('update_cell', views.update_cell, name='update_cell'),
 ]
 
-urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns)
+# Serving static files during the development phase
+# TODO: Remove this in production: https://docs.djangoproject.com/en/5.1/howto/static-files/
+static_jspatterns = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns = utils.arrange_urlpatterns(urlpatterns + htmx_urlpatterns + static_jspatterns)

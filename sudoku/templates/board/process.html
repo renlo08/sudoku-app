@@ -1,6 +1,5 @@
 {% load custom_app_tags %}
 {% load static %}
-<script src="{% static 'js/board.js' %}" defer></script>
 
 <div id="imageProcessing">
   <nav>
@@ -36,9 +35,15 @@
       {% include 'board/partials/board-cell.html' with cell=cell %}
     {% endfor %}
   </table>
+
+  <!-- Command buttons -->
+  <div id="boardCommandContainer">
+    <span class="frozenBoardElt"><button class="boardToggleButton">Éditer</button></span>
+    <span class="editBoardElt">
+      <button class="boardToggleButton">Sauvegarder</button>
+      <button class="boardToggleButton">Annuler</button>
+    </span>
+  </div>
 {% endif %}
 
-<!-- Single Toggle Button Outside the Table -->
-<button class="editBoard">Modifier</button>
-<button class="saveBoard">Sauvegarder</button>
-
+<script src="{% static 'js/board.js' %}" defer></script>

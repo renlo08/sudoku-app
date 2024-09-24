@@ -1,41 +1,45 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Get the 'Frozen' and 'Edit' elements
-  const frozenElements = document.querySelectorAll('.frozenBoardElt');
-  const editElements = document.querySelectorAll('.editBoardElt');
-  const toggleButtons = document.querySelectorAll('.boardToggleButton');
+  // Function to initialize the board elements
+  function initializeBoardElements() {
+    // Get the 'Frozen' and 'Edit' elements
+    const frozenElements = document.querySelectorAll('.frozenBoardElt');
+    const editElements = document.querySelectorAll('.editBoardElt');
+    const editButton = document.querySelector('.editBoardButton');
 
-  // Initially hide all 'Edit' elements
-  editElements.forEach((element) => {
-    element.style.display = 'none';
-  });
-  // Initially display all 'Frozen' elements
-  frozenElements.forEach((element) => {
-    element.style.display = 'block';
-  });
+    // Add event listener to the 'Edit' button
+    if (editButton) {
+      editButton.addEventListener('click', () => {
+        toggleBoardElements();
+        // Change the text of the editButton to 'Switch to Play Mode'
+        if (editButton.textContent === 'Éditer') {
+          editButton.textContent = 'Terminer';
+        } else {
+          editButton.textContent = 'Éditer';
+        }
+      });
+    }
 
-  // Add event listeners to each 'Toggle' button
-  toggleButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      toggleBoardElements();
-    });
-  });
+    // Function to toggle the display of elements
+    function toggleDisplay(element) {
+      if (element.style.display === 'none' || element.style.display === '') {
+        element.style.display = 'block';
+      } else {
+        element.style.display = 'none';
+      }
+    }
 
-  // Function to toggle the display of elements
-  function toggleDisplay(element) {
-    if (element.style.display === 'none' || element.style.display === '') {
-      element.style.display = 'block';
-    } else {
-      element.style.display = 'none';
+    // Function to toggle the board elements
+    function toggleBoardElements() {
+      editElements.forEach(toggleDisplay);
+      frozenElements.forEach(toggleDisplay);
     }
   }
 
-  // Function to toggle the board elements
-  function toggleBoardElements() {
-    frozenElements.forEach((element) => {
-      toggleDisplay(element);
-    });
-    editElements.forEach((element) => {
-      toggleDisplay(element);
-    });
-  }
+  // Initialize board elements on page load
+  initializeBoardElements();
+
+  // Re-initialize board elements after each htmx request
+  document.addEventListener('htmx:afterRequest', function () {
+    initializeBoardElements();
+  });
 });

@@ -1,11 +1,10 @@
 import base64
 import io
+import itertools
 import json
 from os import path
-import typing
 
 import cv2
-from django.urls import reverse
 import numpy as np
 from PIL import Image
 from django.core.files.base import ContentFile
@@ -192,12 +191,12 @@ class SudokuBoard(models.Model):
 class BoardCellQuerySet(models.QuerySet):
     def get_or_create_cells(self, board):
         cells = []
-        for row in range(1, 10):
-            for col in range(1, 10):
-                cell, _ = self.get_or_create(row=row, col=col, board=board)
-                cells.append(cell)
+        for row, col in itertools.product(range(1, 10), range(1, 10)):
+            cell, _ = self.get_or_create(row=row, col=col, board=board)
+            cells.append(cell)
         # Ensure the cells are ordered by row and col
         return sorted(cells, key=lambda cell: (cell.row, cell.col))
+
 
 class BoardCellManager(models.Manager):
     def get_queryset(self):
@@ -206,8 +205,6 @@ class BoardCellManager(models.Manager):
     def get_or_create_cells(self, board):
         return self.get_queryset().get_or_create_cells(board)
     
-
-
 
 class BoardCell(models.Model):
     id = models.AutoField(primary_key=True)

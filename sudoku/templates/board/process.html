@@ -5,19 +5,19 @@
   <nav>
     <ul>
       <li>
-        <a hx-get="{% url 'app:display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
+        <a hx-get="{% url 'app:hx-display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
+        <a hx-get="{% url 'app:hx-display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
+        <a hx-get="{% url 'app:hx-display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
+        <a hx-get="{% url 'app:hx-display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
       </li>
       <li>
-        <a hx-get="{% url 'app:display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
+        <a hx-get="{% url 'app:hx-display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
       </li>
     </ul>
   </nav>
@@ -30,19 +30,21 @@
 
 <!-- 9x9 Table with each cell including 'app.partial.board-cell.html' -->
 {% if cells %}
-  <table>
+  <table id="boardContainer">
     {% for cell in cells %}
+    {% if cell.col == 1 %}
+      <tr>
+    {% endif %}
       {% include 'board/partials/board-cell.html' with cell=cell %}
+      {% if cell.col == 9 %}
+        </tr>
+      {% endif %}
     {% endfor %}
   </table>
 
   <!-- Command buttons -->
   <div id="boardCommandContainer">
-    <span class="frozenBoardElt"><button class="boardToggleButton">Éditer</button></span>
-    <span class="editBoardElt">
-      <button class="boardToggleButton">Sauvegarder</button>
-      <button class="boardToggleButton">Annuler</button>
-    </span>
+      <button class="editBoardButton">Éditer</button>
   </div>
 {% endif %}
 

@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 import plotly.express as px
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 
 from app.forms import UploadForm
@@ -161,3 +162,17 @@ def edit_board(request):
     # Get the board from table
     board = request.GET.get('board')
     return render(request, 'app/partials/edit-board.html', {'board': board})
+
+@require_POST
+def save_cell(request, pk=None):
+    # Get the cell value from the request
+    if request.htmx:
+
+        cell_obj = BoardCell.objects.get(pk=pk)
+        selected_value = request.POST.get(f"cellValue{cell_obj.col}-{cell_obj.row}")
+        if selected_value == "empty":
+            cell_obj.predicted_value = None
+        else:
+            cell_obj.predicted_value = int(selected_value)
+        cell_obj.save()
+    return render(request, 'board/partials/edit-board-cell.html', {'cell': cell_obj})

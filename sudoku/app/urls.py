@@ -15,14 +15,15 @@ urlpatterns = [
 ]
 
 htmx_urlpatterns = [
-    path('display-original/', views.display_original_view, name='display-original'),
+    path('display-original/', views.display_original_view, name='hx-display-original'),
     path('display-grayscale/', views.display_grayscale_view,
-         name='display-grayscale'),
-    path('display-contours/', views.display_contour_view, name='display-contours'),
-    path('display-warp/', views.display_warp_view, name='display-warp'),
-    path('display-constrast/', views.display_constrast_view, name='display-constrast'),
+         name='hx-display-grayscale'),
+    path('display-contours/', views.display_contour_view, name='hx-display-contours'),
+    path('display-warp/', views.display_warp_view, name='hx-display-warp'),
+    path('display-constrast/', views.display_constrast_view, name='hx-display-constrast'),
     path('fill-board/', views.fill_board_view, name='prepare-board'),
-    path('update_cell', views.update_cell, name='update_cell'),
+    path('update_cell', views.update_cell, name='hx-update_cell'),
+    path('<int:pk>/save-cell/', views.save_cell, name='hx-save-cell'),
 ]
 
 # Serving static files during the development phase

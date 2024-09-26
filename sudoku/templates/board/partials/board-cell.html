@@ -1,15 +1,14 @@
 {% load custom_app_tags %}
 
 <td id="cell-{{ cell.pk }}">
-    <img src="data:image/png;base64, {{ cell.uri }}" alt="cell-{{ cell.index }}">
+    <img src="data:image/png;base64, {{ cell.uri }}" alt="cell-{{ cell.pk }}">
     <p>
-        <span class="frozenBoardElt" style="display: block;">{% if cell.predicted_value is not None %}{{ cell.predicted_value}}{% endif %}</span>
+        <span class="frozenBoardElt" style="display: block;">{% if cell.predicted_value is not None %}{{ cell.predicted_value }}{% endif %}</span>
         <span class="editBoardElt" style="display: none;">
             <select
             name="cellValue{{ cell.col }}-{{ cell.row }}" 
             hx-post="{% url "app:hx-save-cell" cell.pk %}" 
             hx-trigger="change" 
-            hx-include="[name='cellValue{{ cell.col }}-{{ cell.row }}']"
             hx-target="#cell-{{ cell.pk}}"
             hx-swap="outerHTML">
                 <option value="empty" {% if cell.predicted_value is None %}selected{% endif %}></option>
@@ -17,10 +16,6 @@
                 <option value="{{ i }}" {% if cell.predicted_value == i %}selected{% endif %}>{{ i }}</option>
                 {% endfor %}
             </select>
-            <input type="hidden" name="cellCol{{ cell.col}}" value="{{ cell.col }}">
-            <input type="hidden" name="cellRow" value="{{ cell.row }}">
         </span>
     </p>
 </td>
-
-

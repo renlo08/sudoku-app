@@ -218,10 +218,6 @@ class BoardCell(models.Model):
         SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
 
     objects = BoardCellManager()
-
-    @property
-    def index(self):
-        return self.row * 9 + self.col
     
     @property
     def roi(self):

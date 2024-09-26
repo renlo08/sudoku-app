@@ -16,5 +16,4 @@ def index(request):
             context['object'] = None
         board_obj = SudokuBoard.objects.get(sudoku__pk=pk)
         context['cells'] = BoardCell.objects.get_or_create_cells(board=board_obj)
-        # context['cell'] = BoardCell.objects.get_or_create_cells(board=board_obj)[2]
     return render(request, 'index.html', context=context)

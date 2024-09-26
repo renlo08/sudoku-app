@@ -12,8 +12,8 @@ def index(request):
     if pk := request.session.get('pk', None):
         try:
             context['object'] = Sudoku.objects.get(pk=pk)
+            board_obj = SudokuBoard.objects.get(sudoku__pk=pk)
+            context['cells'] = BoardCell.objects.get_or_create_cells(board=board_obj)
         except Sudoku.DoesNotExist:
             context['object'] = None
-        board_obj = SudokuBoard.objects.get(sudoku__pk=pk)
-        context['cells'] = BoardCell.objects.get_or_create_cells(board=board_obj)
     return render(request, 'index.html', context=context)

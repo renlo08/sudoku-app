@@ -1,0 +1,9 @@
+x<div class="plot-container">
+    {{ plot|safe }}
+    {% if enable_contours %}
+    	<input type="checkbox" 
+               value="Activer/Deactiver contours" hx-trigger="change">
+        
+    {% endif %} 
+</div>
+

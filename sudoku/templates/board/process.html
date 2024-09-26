@@ -1,0 +1,51 @@
+{% load custom_app_tags %}
+{% load static %}
+
+<div id="imageProcessing">
+  <nav>
+    <ul>
+      <li>
+        <a hx-get="{% url 'app:hx-display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:hx-display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:hx-display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:hx-display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
+      </li>
+      <li>
+        <a hx-get="{% url 'app:hx-display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="image-container"></div>
+</div>
+<form action="{% url 'app:extract-board' %}" method="get">
+  <button type="submit">Extraire la grille</button>
+</form>
+
+<!-- 9x9 Table with each cell including 'app.partial.board-cell.html' -->
+{% if cells %}
+  <table id="boardContainer">
+    {% for cell in cells %}
+    {% if cell.col == 1 %}
+      <tr>
+    {% endif %}
+      {% include 'board/partials/board-cell.html' with cell=cell %}
+      {% if cell.col == 9 %}
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+
+  <!-- Command buttons -->
+  <div id="boardCommandContainer">
+      <button class="editBoardButton">Éditer</button>
+  </div>
+{% endif %}
+
+<script src="{% static 'js/board.js' %}" defer></script>

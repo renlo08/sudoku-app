@@ -1,0 +1,10 @@
+<div>
+    <form method="post">
+        {% csrf_token %}
+        <div> {{ blur_form.kernel_size.label_tag }} {{ blur_form.kernel_size }}</div>
+        <div> {{ blur_form.sigma.label_tag }} {{ blur_form.sigma }}</div>
+        <div> {{ thres_form.sigma.label_tag }} {{ thres_form.sigma }}</div>
+        <div> {{ thres_form.c_const.label_tag }} {{ thres_form.c_const }}</div>
+        <input type="submit" value="Submit">
+    </form>
+</div>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div>
+    <p>
+      Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo de la grille et laisse <strong>Sudoku App</strong> faire le boulot.
+    </p>
+    <p>Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une solution en un clin d'œil.</p>
+    <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
+  </div>
+
+  <section>
+    <h1>1. Choisis une photo</h1>
+    <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
+    {% include 'partials/upload-image.html' %}
+
+    {% comment %}Handle case where there are no images{% endcomment %}
+    {% if items %}
+      <p>OU</p>
+      {% include 'partials/load-image.html' %}
+    {% endif %}
+  </section>
+
+  <section>
+    <h1>2. Initialise la grille</h1>
+    {% if object %}
+      {% include 'board/process.html' %}
+    {% else %}
+      <p>Aucune image n'est chargée pour le moment.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h1>3. Obtiens la solution</h1>
+  </section>
+{% endblock %}

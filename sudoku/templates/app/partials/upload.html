@@ -1,0 +1,10 @@
+<div>
+    {% if form.is_valid %}
+        <p>The file has been successfully uploaded!</p>
+    {% else %}
+        {% for field, error in form.errors.items %}
+            <p class="error-msg">{{ error }}</p>
+        {% endfor %}
+        {{ form.errors.as_p }}
+    {% endif %}
+</div>

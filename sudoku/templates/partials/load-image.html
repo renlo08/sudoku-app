@@ -1,0 +1,13 @@
+<form method="get" action="{% url 'app:reload' %}">
+  <label for="storedImages">Choisir l´une des photos dejà chargées:</label>
+  <select id="storedImages" name="pk">
+    {% for item in items %}
+      {% if item.id == object.id %}
+        <option value="{{ item.id }}" selected>Image #{{ item.id }} - uploaded at {{ object.uploaded_at }}</option>
+      {% else %}
+        <option value="{{ item.id }}">Image #{{ item.id }} - uploaded at {{ object.uploaded_at }}</option>
+      {% endif %}
+    {% endfor %}
+  </select>
+  <button type="submit">Charger image</button>
+</form>

@@ -120,7 +120,7 @@ class SudokuOCRClassifier:
         logger.info(f"Run inference for {rois.shape[0]} digits.")
         probs = self.model.predict(rois, verbose=1)
         max_prob = np.max(probs, axis=1)
-        return np.where(max_prob > 0.6, probs.argmax(axis=1), 0)
+        return np.where(max_prob > 0.6, probs.argmax(axis=1), None)
 
     def predict_generator(self, generator: Generator):
         return self.model.predict(generator, verbose=0)

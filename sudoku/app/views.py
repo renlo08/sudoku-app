@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import plotly.express as px
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -170,7 +170,7 @@ def save_cell(request, pk=None):
 
         cell_obj = BoardCell.objects.get(pk=pk)
         selected_value = request.POST.get(f"cellValue{cell_obj.col}-{cell_obj.row}")
-        if selected_value == "empty":
+        if selected_value == '':
             cell_obj.predicted_value = None
         else:
             cell_obj.predicted_value = int(selected_value)

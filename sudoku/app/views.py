@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from app.forms import UploadForm
 from app.models import BoardCell, Sudoku, SudokuBoard
 from app import utils
+from app.solve import solve_board
 
 
 def upload_view(request):
@@ -83,7 +84,8 @@ def display_contour_view(request):
 
 def display_warp_view(request):
     try:
-        board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+        board_obj = SudokuBoard.objects.get(
+            sudoku__pk=request.session.get('pk'))
         data = board_obj.get_warp_data()
         figure = px.imshow(data)
         figure.update_layout(width=300, height=300, margin=dict(
@@ -95,6 +97,7 @@ def display_warp_view(request):
     except ValueError as e:
         return render(request, 'board/partials/draw.html', context={'error': str(e)})
 
+
 def display_constrast_view(request):
     board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
     figure = px.imshow(board_obj.get_contrasted_data())
@@ -105,20 +108,23 @@ def display_constrast_view(request):
     figure_html = figure.to_html()
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
 
+
 def extract_board_view(request):
     if request.method == 'GET':
         # Get the board cells from the database
-        board_obj = SudokuBoard.objects.get(sudoku__pk=request.session.get('pk'))
+        board_obj = SudokuBoard.objects.get(
+            sudoku__pk=request.session.get('pk'))
         cells = BoardCell.objects.get_or_create_cells(board=board_obj)
         # Prepare the model for classification
         model = utils.get_classification_model()
 
         # Extract the cells from the image
-        model_input = np.concatenate([cell.prepare_roi_for_classification() for cell in cells])
-        
+        model_input = np.concatenate(
+            [cell.prepare_roi_for_classification() for cell in cells])
+
         # Predict the digits in the cells
         predictions = model.predict(model_input).tolist()
-        
+
         # Save the predictions to the cells
         for cell, prediction in zip(cells, predictions):
             cell.predicted_value = prediction
@@ -151,7 +157,7 @@ def fill_board_view(request):
     return render(request, 'app/partials/prepare-board.html', {'board': board, 'cells_uri': images_uri})
 
 
-def update_cell(request):
+def update_cell_view(request):
     # Extract the cell value from the GET parameters
     cell_value = request.GET.get('name')
     board = np.zeros((81, 1)).tolist()
@@ -163,16 +169,34 @@ def edit_board(request):
     board = request.GET.get('board')
     return render(request, 'app/partials/edit-board.html', {'board': board})
 
+
 @require_POST
-def save_cell(request, pk=None):
+def save_cell_view(request, pk=None):
     # Get the cell value from the request
     if request.htmx:
 
         cell_obj = BoardCell.objects.get(pk=pk)
-        selected_value = request.POST.get(f"cellValue{cell_obj.col}-{cell_obj.row}")
+        selected_value = request.POST.get(
+            f"cellValue{cell_obj.col}-{cell_obj.row}")
         if selected_value == '':
             cell_obj.predicted_value = None
         else:
             cell_obj.predicted_value = int(selected_value)
         cell_obj.save()
     return render(request, 'board/partials/edit-board-cell.html', {'cell': cell_obj})
+
+
+def solve_board_view(request, pk=None):
+    if request.htmx:
+        # Get the board from the database
+        board_obj = SudokuBoard.objects.get(sudoku__pk=pk)
+        cells = BoardCell.objects.get_or_create_cells(board=board_obj)
+        # Join the 81 cells values as a single string
+        board_string = ''.join(['0' if cell.predicted_value is None else str(
+            cell.predicted_value) for cell in cells])
+        board_string = solve_board(board_string)
+        # Save the solved board to the cells
+        for cell, value in zip(cells, board_string.values()):
+            cell.solved_value = int(value)
+            cell.save()
+    return render(request, 'board/solve-board.html', {'cells': cells})

@@ -213,7 +213,7 @@ class BoardCell(models.Model):
     row = models.IntegerField()
     col = models.IntegerField()
     predicted_value = models.IntegerField(blank=True, null=True)
-    value = models.IntegerField(blank=True, null=True)
+    solved_value = models.IntegerField(blank=True, null=True)
     board = models.ForeignKey(
         SudokuBoard, on_delete=models.CASCADE, blank=True, null=True)
 

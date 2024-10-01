@@ -32,5 +32,11 @@
 
   <section>
     <h1>3. Obtiens la solution</h1>
+    <div id="board">
+      {% include 'board/solve-board.html' %}
+    </div>
+    <div>
+      <input type="button" value="Résoudre" hx-get="{% url 'app:hx-solve-board' object.pk %}" hx-target="#board" hx-swap="outerHTML" />
+    </div>
   </section>
 {% endblock %}

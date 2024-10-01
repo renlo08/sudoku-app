@@ -1,37 +1,30 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>SUDOKU-APP</title>
 
-    {% load static %}
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {% tailwind_css %}
+  </head>
+  <body>
+    <header>
+      {% include 'partials/navbar.html' %}
+    </header>
 
-</head>
-<body>
-
-<header>
-    <!-- Logo-->
-    <h1>
-        <span>SUDOKU APP</span>
-    </h1>
-    {% include 'partials/navbar.html' %}
-</header>
-
-<!-- main and page content -->
-<main>
-
-    {% block content %}
+    <!-- main and page content -->
+    <main>
+      {% block content %}
         <h3>This will be replaced</h3>
-    {% endblock content %}
-</main>
+      {% endblock %}
+    </main>
 
-<footer>placeholder footer</footer>
-<script>
-    document.body.addEventListener('htmx:configRequest', (event) => {
-        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    })
-</script>
-</body>
+    <footer>placeholder footer</footer>
+    <script>
+      document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
+      })
+    </script>
+  </body>
 </html>

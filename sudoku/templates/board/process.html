@@ -25,7 +25,7 @@
   <div id="image-container"></div>
 </div>
 <form action="{% url 'app:extract-board' %}" method="get">
-  <button type="submit">Extraire la grille</button>
+  <button class="btn" type="submit">Extraire la grille</button>
 </form>
 
 <!-- 9x9 Table with each cell including 'app.partial.board-cell.html' -->
@@ -44,7 +44,7 @@
 
   <!-- Command buttons -->
   <div id="boardCommandContainer">
-      <button class="editBoardButton">Éditer</button>
+      <button class="editBoardButton btn">Éditer</button>
   </div>
 {% endif %}
 

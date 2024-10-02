@@ -1,5 +1,17 @@
-<div>
-    {% for cell in cells %}
-    <div>{{ cell.solved_value}}</div>
-    {% endfor %}
-</div>
+{% load custom_app_tags %}
+
+<div class="relative">
+    <!-- Boxes in the sudoku -->
+    <div class="inline-grid absolute pointer-events-none grid-rows-{{ box_size.1 }} grid-cols-{{ box_size.0 }}">
+      {% for _ in board %}
+        <div class="h-{{ box_size.0|multiply:8 }} w-{{ box_size.1|multiply:8 }} border border-black"></div>
+      {% endfor %}
+    </div>
+  
+    <!-- Rows and columns of inputs -->
+    <div id="userBoard" class="inline-grid grid-rows-{{ size }} grid-cols-{{ size }}">
+        {% for cell in cells %}
+          <div class="border p-2 text-center">{{ cell.solved_value }}</div>
+        {% endfor %}
+    </div>
+  </div>

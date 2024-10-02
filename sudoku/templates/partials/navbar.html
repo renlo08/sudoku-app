@@ -22,15 +22,15 @@
           <li><a>Settings</a></li>
         </ul>
       </div>
-      <a class="btn btn-ghost text-xl">sudokuAPP</a>
+      <a class="btn btn-ghost text-xl" href="{% url 'home' %}">sudokuAPP</a>
     </div>
-    <div class="navbar-center hidden lg:flex">
+    {% comment %} <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a>Settings</a></li>
       </ul>
-    </div>
+    </div> {% endcomment %}
     <div class="navbar-end">
-      <a class="btn">Button</a>
+      <a class="btn btn-primary">Settings</a>
     </div>
   </nav>

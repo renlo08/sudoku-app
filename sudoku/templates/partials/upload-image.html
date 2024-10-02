@@ -2,7 +2,7 @@
   {% csrf_token %}
   <div>
     {{ form.photo.label_tag }} {{ form.photo }}
-    <button type="submit">Charger une nouvelle image</button>
+    <button type="submit" class="file-input file-input-bordered w-full max-w-xs">Charger une nouvelle image</button>
   </div>
 </form>
 {% if form.errors %}

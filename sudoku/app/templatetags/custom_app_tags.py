@@ -16,3 +16,10 @@ def index(items, i):
 @register.filter(name='to')
 def to(value, arg):
     return range(value, arg + 1)
+
+@register.filter
+def multiply(value, arg):
+    try:
+        return int(value) * int(arg)
+    except (ValueError, TypeError):
+        return ''

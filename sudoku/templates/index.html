@@ -1,24 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div>
+  <article>
     <p>
-      Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo de la grille et laisse <strong>Sudoku App</strong> faire le boulot.
+      Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo de la grille et laisse <strong>sudokuApp</strong> faire le boulot.
     </p>
     <p>Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une solution en un clin d'œil.</p>
     <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
-  </div>
+  </article>
 
-  <section>
-    <h1>1. Choisis une photo</h1>
-    <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
-    {% include 'partials/upload-image.html' %}
+  <section tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
+    <h1 class="collapse-title text-xl font-medium text-primary">1. Choisis une photo</h1>
+    <div class="collapse-content">
+      <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
+      {% include 'partials/upload-image.html' %}
 
-    {% comment %}Handle case where there are no images{% endcomment %}
-    {% if items %}
-      <p>OU</p>
-      {% include 'partials/load-image.html' %}
-    {% endif %}
+      {% comment %}Handle case where there are no images{% endcomment %}
+      {% if items %}
+        <p>OU</p>
+        {% include 'partials/load-image.html' %}
+      {% endif %}
+    </div>
   </section>
 
   <section>
@@ -36,7 +38,7 @@
       {% include 'board/solve-board.html' %}
     </div>
     <div>
-      <input class="btn" type="button" value="Résoudre" hx-get="{% url 'app:hx-solve-board' object.pk %}" hx-target="#board" hx-swap="outerHTML" />
+      <input class="btn btn-primary" type="button" value="Résoudre" hx-get="{% url 'app:hx-solve-board' object.pk %}" hx-target="#board" hx-swap="outerHTML" />
     </div>
   </section>
 {% endblock %}

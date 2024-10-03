@@ -8,28 +8,25 @@
     <p>Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une solution en un clin d'œil.</p>
     <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
   </article>
-
-  <section tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
-    <h1 class="collapse-title text-xl font-medium text-primary">1. Choisis une photo</h1>
-    <div class="collapse-content flex flex-row">
-      <div class="basis-5/12">
-        {% include 'partials/upload-image.html' %}
-      </div>
+  <h1 class="text-xl font-medium text-primary">1. Choisis une photo</h1>
+  <section>
+    <div class="flex flex-row justify-evently">
       {% comment %}Handle case where there are no images{% endcomment %}
       {% if items %}
-        <div class="flex flex-col items-center justify-center h-full">
-          <div class="border-r border-gray-300 h-1/2"></div>
-          <span class="my-2 text-primary">OU</span>
-          <div class="border-r border-gray-300 h-1/2"></div>
-        </div>
-        <div class="basis-5/12 pl-4">
-          {% include 'partials/load-image.html' %}
-        </div>
+      <div class="w-1/6 content-center flex justify-end">
+        {% include 'partials/load-image.html' %}
+      </div>
+      <div class="content-center w-16 flex justify-center">
+        <div class="my-2 text-primary content-center">OU</div>
+      </div>
       {% endif %}
+      <div class="step-container content-center w-1/3">
+        {% include 'partials/upload-image.html' %}
+      </div>
     </div>
   </section>
 
-  <section>
+  <section class="step-container">
     <h1>2. Initialise la grille</h1>
     {% if object %}
       {% include 'board/process.html' %}
@@ -38,7 +35,7 @@
     {% endif %}
   </section>
 
-  <section>
+  <section class="step-container">
     <h1>3. Obtiens la solution</h1>
     <div id="board">
       {% include 'board/solve-board.html' %}

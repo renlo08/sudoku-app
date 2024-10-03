@@ -1,13 +1,8 @@
-<form method="get" action="{% url 'app:reload' %}">
-  <label for="storedImages">Choisir l´une des photos dejà chargées:</label>
-  <select id="storedImages" name="pk">
+<div class="dropdown dropdown-hover content-center">
+  <div tabindex="0" role="button" class="btn btn-secondary btn-wide m-1">Charger une image existante</div>
+  <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-100 p-2 shadow">
     {% for item in items %}
-      {% if item.id == object.id %}
-        <option value="{{ item.id }}" selected>Image #{{ item.id }} - uploaded at {{ object.uploaded_at }}</option>
-      {% else %}
-        <option value="{{ item.id }}">Image #{{ item.id }} - uploaded at {{ object.uploaded_at }}</option>
-      {% endif %}
+    <li><a href="{% url "app:reload" %}">{{ item.get_photo_name}} ({{ item.uploaded_at}}) </a></li>
     {% endfor %}
-  </select>
-  <button type="submit">Charger image</button>
-</form>
+  </ul>
+</div>

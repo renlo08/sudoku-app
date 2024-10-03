@@ -19,6 +19,9 @@ class Sudoku(models.Model):
     photo = models.ImageField(upload_to='sudoku_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def get_photo_name(self) -> str:
+        return self.photo.name
+
     def save(self, *args, **kwargs):
         # Check if the instance is being created (i.e., it doesn't have an ID yet)
         if not self.id:

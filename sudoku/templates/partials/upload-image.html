@@ -14,19 +14,16 @@
   </div>
 {% endif %}
 
-<div class="pl-6">
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label class="form-control w-full file-input-primary max-w-xl">
-      <div class="label">
-        <span class="label-text text-lg">Sélectionne sur ton appareil une image de grille de sudoku à analyser.</span>
-      </div>
-      {{ form.photo }}
-      <div class="label">
-
-        <span class="label-text-alt">fichiers accepté: jpg, png</span>
-        <button type="submit" class="btn btn-sm btn-primary">Charger</button>
-      </div>
-    </label>
-  </form>
-</div>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <label class="form-control w-full file-input-primary max-w-xl">
+    <div class="label">
+      <span class="label-text text-lg">Sélectionne sur ton appareil une image de grille de sudoku à analyser.</span>
+    </div>
+    {{ form.photo }}
+    <div class="label">
+      <span class="label-text-alt">fichiers accepté: jpg, png</span>
+      <button type="submit" class="btn btn-sm btn-secondary btn-wide">Charger une nouvelle image</button>
+    </div>
+  </label>
+</form>

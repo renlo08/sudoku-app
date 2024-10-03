@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.step-container{
+    @apply p-4 rounded-lg border-2 border-dashed border-neutral-content bg-base-200;
+}

@@ -52,3 +52,13 @@ function toggleBoardElements() {
     element.style.display = element.style.display === 'none' ? '' : 'none';
   });
 }
+
+
+// Function to move the active tab when cliking on a tab
+function changeTabStatus(e) {
+  var elems = document.querySelectorAll('.tab');
+  [].forEach.call(elems, function(el) {
+    el.classList.remove('tab-active');
+  });
+  e.target.classList.add('tab-active');
+}

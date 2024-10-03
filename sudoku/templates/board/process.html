@@ -1,14 +1,14 @@
 {% load custom_app_tags %}
 {% load static %}
 
-  <div role="tablist" class="tabs tabs-bordered">
-      <a role="tab" hx-get="{% url 'app:hx-display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
-      <a role="tab" hx-get="{% url 'app:hx-display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
-      <a role="tab" hx-get="{% url 'app:hx-display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
-      <a role="tab" hx-get="{% url 'app:hx-display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
-      <a role="tab" hx-get="{% url 'app:hx-display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
-  </div>
-  <div id="image-container"></div>
+<div role="tablist" class="tabs tabs-bordered" onclick="changeTabStatus(event)">
+    <a role="tab" class="tab tab-active" hx-get="{% url 'app:hx-display-original' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Montrer l´image</a>
+    <a role="tab" class="tab" hx-get="{% url 'app:hx-display-grayscale' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Griser l´image</a>
+    <a role="tab" class="tab" hx-get="{% url 'app:hx-display-contours' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Détecter contours dans l´image</a>
+    <a role="tab" class="tab" hx-get="{% url 'app:hx-display-warp' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Redresser l´image</a>
+    <a role="tab" class="tab" hx-get="{% url 'app:hx-display-constrast' %}" hx-target="#image-container" hx-trigger="click" hx-swap="innerHTML">Améliorer les contrastes</a>
+</div>
+<div id="image-container"></div>
 <form action="{% url 'app:extract-board' %}" method="get">
   <button class="btn btn-primary" type="submit">Extraire la grille</button>
 </form>

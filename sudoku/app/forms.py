@@ -10,7 +10,7 @@ class UploadForm(forms.ModelForm):
         model = Sudoku
         fields = '__all__'
         labels = {
-            'photo': 'Choisir la photo '
+            'photo': 'Parcourir'
         }
 
     def clean_photo(self):

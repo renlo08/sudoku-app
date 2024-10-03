@@ -11,14 +11,20 @@
 
   <section tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
     <h1 class="collapse-title text-xl font-medium text-primary">1. Choisis une photo</h1>
-    <div class="collapse-content">
-      <p>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</p>
-      {% include 'partials/upload-image.html' %}
-
+    <div class="collapse-content flex flex-row">
+      <div class="basis-5/12">
+        {% include 'partials/upload-image.html' %}
+      </div>
       {% comment %}Handle case where there are no images{% endcomment %}
       {% if items %}
-        <p>OU</p>
-        {% include 'partials/load-image.html' %}
+        <div class="flex flex-col items-center justify-center h-full">
+          <div class="border-r border-gray-300 h-1/2"></div>
+          <span class="my-2">OU</span>
+          <div class="border-r border-gray-300 h-1/2"></div>
+        </div>
+        <div class="basis-5/12 pl-4">
+          {% include 'partials/load-image.html' %}
+        </div>
       {% endif %}
     </div>
   </section>

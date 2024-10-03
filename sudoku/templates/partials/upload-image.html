@@ -1,3 +1,5 @@
+<h2>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</h2>
+<div class="w-full text-xs text-center justify-end">fichiers acceptés: jpg, png</div>
 <form method="post" action="{% url 'app:upload' %}" enctype="multipart/form-data">
   {% csrf_token %}
   <div>
@@ -20,3 +22,4 @@
     </ul>
   </div>
 {% endif %}
+

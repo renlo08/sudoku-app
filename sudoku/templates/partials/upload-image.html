@@ -1,14 +1,5 @@
-<h2>Sélectionne sur ton appareil une image de grille de sudoku à analyser.</h2>
-<div class="w-full text-xs text-center justify-end">fichiers acceptés: jpg, png</div>
-<form method="post" action="{% url 'app:upload' %}" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div>
-    {{ form.photo.label_tag }} {{ form.photo }}
-    <button type="submit" class="file-input file-input-bordered w-full max-w-xs">Charger une nouvelle image</button>
-  </div>
-</form>
 {% if form.errors %}
-  <div class="alert alert-danger">
+  <div class="alert alert-error">
     <ul>
       {% for field in form %}
         <!-- This is how to iterate on each field of the form -->
@@ -23,3 +14,19 @@
   </div>
 {% endif %}
 
+<div class="pl-6">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label class="form-control w-full file-input-primary max-w-xl">
+      <div class="label">
+        <span class="label-text text-lg">Sélectionne sur ton appareil une image de grille de sudoku à analyser.</span>
+      </div>
+      {{ form.photo }}
+      <div class="label">
+
+        <span class="label-text-alt">fichiers accepté: jpg, png</span>
+        <button type="submit" class="btn btn-sm btn-primary">Charger</button>
+      </div>
+    </label>
+  </form>
+</div>

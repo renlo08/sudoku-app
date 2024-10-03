@@ -12,6 +12,9 @@ class UploadForm(forms.ModelForm):
         labels = {
             'photo': 'Parcourir'
         }
+        widgets = {
+            'photo': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-primary w-full max-w-sm'})
+        }
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

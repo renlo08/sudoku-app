@@ -13,7 +13,7 @@ class UploadForm(forms.ModelForm):
             'photo': 'Parcourir'
         }
         widgets = {
-            'photo': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-primary w-full max-w-sm'})
+            'photo': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-secondary w-full max-w-xs m-4'})
         }
 
     def clean_photo(self):

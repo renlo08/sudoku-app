@@ -9,21 +9,16 @@
     <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
   </article>
   <h1 class="text-xl font-medium text-primary">1. Choisis une photo</h1>
-  <section>
-    <div class="flex flex-row justify-evently">
-      {% comment %}Handle case where there are no images{% endcomment %}
-      {% if items %}
-      <div class="w-1/6 content-center flex justify-end">
-        {% include 'partials/load-image.html' %}
-      </div>
+  <section class="flex flex-row">
+    {% comment %}Handle case where there are no images{% endcomment %}
+    {% if items %}
+      {% include 'partials/load-image.html' %}
       <div class="content-center w-16 flex justify-center">
         <div class="my-2 text-primary content-center">OU</div>
       </div>
-      {% endif %}
-      <div class="content-center w-1/3">
-        {% include 'partials/upload-image.html' %}
-      </div>
-    </div>
+    {% endif %}
+
+    {% include 'partials/upload-image.html' %}
   </section>
 
   <section class="step-container">

@@ -9,12 +9,6 @@ class UploadForm(forms.ModelForm):
     class Meta:
         model = Sudoku
         fields = '__all__'
-        labels = {
-            'photo': 'Parcourir'
-        }
-        widgets = {
-            'photo': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-secondary w-full max-w-xs m-4'})
-        }
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

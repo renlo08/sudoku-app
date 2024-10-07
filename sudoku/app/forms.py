@@ -8,7 +8,10 @@ from app.models import Sudoku
 class UploadForm(forms.ModelForm):
     class Meta:
         model = Sudoku
-        fields = '__all__'
+        fields = ['photo']
+        widgets = {
+            'photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'id': 'new-file'})
+        }
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

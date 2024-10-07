@@ -16,6 +16,7 @@ urlpatterns = [
 ]
 
 htmx_urlpatterns = [
+    path('upload-details/', views.add_upload_details_view, name='hx-upload-details'),
     path('display-original/', views.display_original_view,
          name='hx-display-original'),
     path('display-grayscale/', views.display_grayscale_view,

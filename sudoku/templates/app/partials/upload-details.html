@@ -1,0 +1,8 @@
+{% load static %}
+
+{% if has_file %}
+  <div class="flex bg-green-300 rounded-md justify-end items-center h-12 px-4">
+    <img src="{% static 'images/app/add-file.svg' %}" alt="Add File Icon" class="w-6 h-6 mr-2" />
+    <span>{{ file_path }}</span>
+  </div>
+{% endif %}

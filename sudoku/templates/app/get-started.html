@@ -8,9 +8,9 @@
       <h2 class="text-2xl leading-tight">Nouvelle image</h2>
       <p class="text-xs text-gray-400">Charger une nouvelle image de grille sudoku</p>
     </div>
-    <form method="post" action="{% url 'app:reload' %}" enctype="multipart/form-data" name="upload-image-form" class="grow">
-      {% csrf_token %}
-      <div class="upload-zone-document">
+    <div class="upload-zone-document" id="drop-zone">
+      <form enctype="multipart/form-data" name="upload-image-form" class="grow" hx-post="{% url 'app:hx-upload-details' %}" hx-trigger="change from:#new-file" hx-target="#file-details" hx-swap="innerHTML">
+        {% csrf_token %}
         <label class="image-file-upload-zone">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="p-2 w-16 h-16 text-white rounded-full bg-secondary">
             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -19,14 +19,17 @@
             <span>Faites glisser une image ici, ou <span class="text-secondary underline">parcourir</span></span>
             <p class="text-xs text-gray-400">Formats autorisés: PNG, JPG</p>
           </div>
-          <input type="file" name="file_upload" accept="image/*" class="hidden" id="new-image" />
+          <div class="hidden">
+          {{ form.photo }}
+          </div>
+          <div id="file-details"></div>
         </label>
-      </div>
-      <button class="wizard-btn" type="submit">Suivant</button>
-      <div class="upload-zone-btn self-end p-4">
-      </div>
-    </form>
+      </form>
+    </div>
+    <button class="wizard-btn" type="submit">Suivant</button>
+    <div class="upload-zone-btn self-end p-4"></div>
   </div>
 
   <!-- section for loading an existing file -->
+  <script src="{% static 'js/dropzone.js' %}" defer></script>
 {% endblock %}

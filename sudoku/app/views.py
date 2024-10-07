@@ -11,7 +11,23 @@ from app import utils
 from app.solve import solve_board
 
 def get_started_view(request):
-    return render(request, 'app/get-started.html')
+    form = UploadForm()
+    if request.method == "POST":
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            sudoku_obj = Sudoku(photo=request.FILES['photo'])
+            sudoku_obj.save()
+            render(request, 'app/get-started.html', {'form': form})
+    return render(request, 'app/get-started.html', {'form': form})
+
+def add_upload_details_view(request):
+    context = {'has_file': False}
+    if request.htmx and request.method =="POST":
+        file = request.FILES.get('photo')
+        if file:
+            context['file_path'] = file.name
+            context['has_file'] = True
+    return render(request, 'app/partials/upload-details.html', context=context)
 
 def upload_view(request):
     if request.method == 'POST':

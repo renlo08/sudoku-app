@@ -8,6 +8,7 @@ from sudoku import utils
 app_name = 'app'
 
 urlpatterns = [
+    path('',views.get_started_view, name='get-started'),
     path('upload/', views.upload_view, name='upload'),
     path('reload/', views.reload_view, name='reload'),
     path('extract/', views.extract_board_view, name='extract-board'),

@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="flex justify-center">
+    <ul class="steps w-5/12">
+      <li class="step step-primary">Selectionner</li>
+      <li class="step">Extraire</li>
+      <li class="step">Résoudre</li>
+    </ul>
+  </div>
+  {% block app_content %}
+    <p>Doit être remplacé par le contenu de l'application</p>
+  {% endblock %}
+{% endblock %}

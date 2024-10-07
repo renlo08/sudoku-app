@@ -10,6 +10,8 @@ from app.models import BoardCell, Sudoku, SudokuBoard
 from app import utils
 from app.solve import solve_board
 
+def get_started_view(request):
+    return render(request, 'app/get-started.html')
 
 def upload_view(request):
     if request.method == 'POST':

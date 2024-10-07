@@ -1,42 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-  <article>
-    <p>
-      Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo de la grille et laisse <strong>sudokuAPP</strong> faire le boulot.
-    </p>
-    <p>Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une solution en un clin d'œil.</p>
-    <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
-  </article>
-  <h1 class="text-xl font-medium text-primary">1. Choisis une photo</h1>
-  <section class="flex flex-row">
-    {% comment %}Handle case where there are no images{% endcomment %}
-    {% if items %}
-      {% include 'partials/load-image.html' %}
-      <div class="content-center w-16 flex justify-center">
-        <div class="my-2 text-primary content-center">OU</div>
+  {% comment %} <div class="hero min-h-screen" style="background-image: url(https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp);"> {% endcomment %}
+  <div class="hero min-h-screen" style="background-image: url({% static 'images/home.jpg' %});">
+    <div class="hero-overlay bg-opacity-60"></div>
+    <div class="hero-content text-neutral-content text-center">
+      <div class="max-w-xl">
+        <h1 class="mb-5 text-5xl font-bold">Bienvenue</h1>
+        <article class="mb-5 text-pretty">
+          <p>
+            Pas besoin de te prendre la tête avec la grille de Sudoku. Prends juste ton téléphone, clique sur une photo de la grille et laisse <strong class="text-primary">sudokuAPP</strong> faire le boulot.
+          </p>
+          <p>Allez, prends une photo de ta grille de Sudoku et tu vas voir, notre appli se charge de tout, en pondant une solution en un clin d'œil.</p>
+          <p>Vas-y, transforme ton expérience du Sudoku avec notre appli ! Tu vas voir, c'est du lourd !</p>
+        </article>
+        <a class="btn btn-primary" href="{% url 'app:get-started' %}">C´est parti</a>
       </div>
-    {% endif %}
-
-    {% include 'partials/upload-image.html' %}
-  </section>
-
-  <section class="step-container">
-    <h1>2. Initialise la grille</h1>
-    {% if object %}
-      {% include 'board/process.html' %}
-    {% else %}
-      <p>Aucune image n'est chargée pour le moment.</p>
-    {% endif %}
-  </section>
-
-  <section class="step-container">
-    <h1>3. Obtiens la solution</h1>
-    <div id="board">
-      {% include 'board/solve-board.html' %}
     </div>
-    <div>
-      <input class="btn btn-primary" type="button" value="Résoudre" hx-get="{% url 'app:hx-solve-board' object.pk %}" hx-target="#board" hx-swap="outerHTML" />
-    </div>
-  </section>
+  </div>
 {% endblock %}

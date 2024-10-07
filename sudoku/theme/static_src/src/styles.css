@@ -5,3 +5,22 @@
 .step-container{
     @apply p-4 rounded-lg border-2 border-dashed border-neutral-content bg-base-200;
 }
+.upload-zone{
+    @apply bg-gray-50 h-screen flex flex-col
+}
+.upload-zone-title{
+    @apply font-medium text-left pl-4 py-5;
+}
+.upload-zone-document{
+    @apply flex justify-center items-center bg-white border-dashed border-2 border-secondary rounded-lg mx-4 h-2/3 grow;
+}
+.image-file-upload-zone{
+    @apply flex flex-col items-center justify-start;
+}
+
+.drag-zone{
+    @apply flex flex-col items-center justify-center;
+}
+.wizard-btn{
+    @apply btn btn-active btn-secondary m-5;
+}

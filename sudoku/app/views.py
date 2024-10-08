@@ -21,13 +21,14 @@ def get_started_view(request):
     return render(request, 'app/get-started.html', {'form': form})
 
 def add_upload_details_view(request):
-    context = {'has_file': False}
+    context = {}
     if request.htmx and request.method =="POST":
-        file = request.FILES.get('photo')
-        if file:
-            context['file_path'] = file.name
-            context['has_file'] = True
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            context['file_path'] = form.cleaned_data['photo'].name
+        context['form'] = form
     return render(request, 'app/partials/upload-details.html', context=context)
+
 
 def upload_view(request):
     if request.method == 'POST':

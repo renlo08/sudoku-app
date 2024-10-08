@@ -20,5 +20,5 @@ class UploadForm(forms.ModelForm):
             ext = ext.lstrip('.').lower()
             if ext not in ['png', 'jpg', 'jpeg']:
                 raise forms.ValidationError(
-                    'Format de fichier non supporté. Charger une photo au format .png, .jpg, .jpeg')
+                    f'Format non supporté. Formats autorisés: .png, .jpg, .jpeg')
         return photo

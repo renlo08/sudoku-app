@@ -3,13 +3,13 @@
 
 {% block app_content %}
   <!-- section for loading new files -->
-  <div class="upload-zone bg-gray-100">
+  <div class="upload-zone">
     <div class="upload-zone-title">
       <h2 class="text-2xl leading-tight">Nouvelle image</h2>
       <p class="text-xs text-gray-400">Charger une nouvelle image de grille sudoku</p>
     </div>
-    <div class="upload-zone-document" id="drop-zone">
-      <form enctype="multipart/form-data" name="upload-image-form" class="grow" hx-post="{% url 'app:hx-upload-details' %}" hx-trigger="change from:#new-file" hx-target="#file-details" hx-swap="innerHTML">
+    <div id="drop-zone" class="upload-zone-document">
+      <form enctype="multipart/form-data" name="upload-image-form" hx-post="{% url 'app:hx-upload-details' %}" hx-trigger="change from:#new-file" hx-target="#file-details" hx-swap="innerHTML">
         {% csrf_token %}
         <label class="image-file-upload-zone">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="p-2 w-16 h-16 text-white rounded-full bg-secondary">
@@ -19,15 +19,14 @@
             <span>Faites glisser une image ici, ou <span class="text-secondary underline">parcourir</span></span>
             <p class="text-xs text-gray-400">Formats autorisés: PNG, JPG</p>
           </div>
-          <div class="hidden">
-          {{ form.photo }}
-          </div>
-          <div id="file-details"></div>
+          <div class="hidden">{{ form.photo }}</div>
+          <div class="m-4" id="file-details"></div>
         </label>
       </form>
     </div>
+  </div>
+  <div class="flex justify-end">
     <button class="wizard-btn" type="submit">Suivant</button>
-    <div class="upload-zone-btn self-end p-4"></div>
   </div>
 
   <!-- section for loading an existing file -->

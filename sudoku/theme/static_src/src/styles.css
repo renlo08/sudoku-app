@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Custom styles */
-.upload-zone{ 
+.growable-flex-container{
     @apply flex-grow flex flex-col;
 }
 .upload-zone-title{

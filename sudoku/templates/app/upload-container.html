@@ -1,12 +1,10 @@
-{% load static %}
-
 <!-- section for loading new files -->
 <div class="growable-flex-container" id="selection-container">
   <div class="upload-zone-title">
     <h2 class="text-2xl leading-tight">Nouvelle image</h2>
     <p class="text-xs text-gray-400">Charger une nouvelle image de grille sudoku</p>
   </div>
-  <div id="drop-zone" class="upload-zone-document">
+  <div id="drop-zone" class="upload-zone-document" ondragover="dragOverDropZone(event)" ondragleave="dragLeaveDropZone(event)" ondrop="dropOnDropZone(event)">
     <form enctype="multipart/form-data" name="upload-image-form" hx-post="{% url 'app:hx-upload-details' %}" hx-trigger="change from:#new-file" hx-target="#file-details" hx-swap="innerHTML">
       {% csrf_token %}
       <label class="image-file-upload-zone">
@@ -25,7 +23,6 @@
   <div class="flex justify-end">
     <button class="wizard-btn" type="submit">Suivant</button>
   </div>
-
 </div>
 
 

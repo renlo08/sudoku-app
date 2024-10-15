@@ -34,8 +34,8 @@ def add_upload_details_view(request):
     return render(request, 'app/partials/upload-details.html', context=context)
 
 def add_image_view(request):
-    obj = Sudoku.objects.all()
-    return render(request, 'app/upload-container.html', {'object': obj})
+    form = UploadForm()
+    return render(request, 'app/upload-container.html', {'form': form})
 
 def list_image_view(request):
     obj = Sudoku.objects.all()

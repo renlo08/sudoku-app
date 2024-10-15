@@ -20,6 +20,10 @@ def get_started_view(request):
             render(request, 'app/get-started.html', {'form': form})
     return render(request, 'app/get-started.html', {'form': form})
 
+def load_existing_image_view(request):
+    obj = Sudoku.objects.all()
+    return render(request, 'app/reload-container.html', {'object': obj})
+
 def add_upload_details_view(request):
     context = {}
     if request.htmx and request.method =="POST":
@@ -29,6 +33,13 @@ def add_upload_details_view(request):
         context['form'] = form
     return render(request, 'app/partials/upload-details.html', context=context)
 
+def add_image_view(request):
+    obj = Sudoku.objects.all()
+    return render(request, 'app/upload-container.html', {'object': obj})
+
+def list_image_view(request):
+    obj = Sudoku.objects.all()
+    return render(request, 'app/reload-container.html', {'object': obj})
 
 def upload_view(request):
     if request.method == 'POST':

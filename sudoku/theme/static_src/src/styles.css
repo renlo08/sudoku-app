@@ -19,3 +19,7 @@
 .wizard-btn{
     @apply btn btn-active btn-secondary m-5;
 }
+
+.insert-image-card{
+    @apply absolute inset-x-5 top-3 text-center bg-opacity-60 bg-white text-gray-800 rounded-md;
+}

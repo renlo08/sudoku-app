@@ -38,8 +38,8 @@ def add_image_view(request):
     return render(request, 'app/upload-container.html', {'form': form})
 
 def list_image_view(request):
-    obj = Sudoku.objects.all()
-    return render(request, 'app/reload-container.html', {'object': obj})
+    objects = Sudoku.objects.all()
+    return render(request, 'app/reload-container.html', {'objects': objects})
 
 def upload_view(request):
     if request.method == 'POST':

@@ -23,3 +23,17 @@ def multiply(value, arg):
         return int(value) * int(arg)
     except (ValueError, TypeError):
         return ''
+    
+@register.filter
+def add(value, arg):
+    try:
+        return int(value) + int(arg)
+    except (ValueError, TypeError):
+        return ''
+
+@register.filter
+def subtract(value, arg):
+    try:
+        return int(value) - int(arg)
+    except (ValueError, TypeError):
+        return ''

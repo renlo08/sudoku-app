@@ -1,21 +1,23 @@
+{% load custom_app_tags %}
+
 <div id="slide{{ forloop.counter }}" class="carousel-item relative w-full">
   <img src="{{ obj.photo.url }}" alt="{{ obj.title }}" class="w-full" />
   <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
     <!-- define the slide button of the card -->
     {% if forloop.first %}
-        <!-- if first slide, show last slide button -->
+      <!-- if first slide, show last slide button -->
       <a href="#slide{{ forloop.revcounter }}" class="btn btn-circle">❮</a>
-      {% else %}
-      <!-- if not first show previous and next slide buttons -->
-      <a href="#slide{{ forloop.counter +  1 }}" class="btn btn-circle">❮</a>
+    {% else %}
+      <!-- if not first previous, show slide button -->
+      <a href="#slide{{ forloop.counter|subtract:1 }}" class="btn btn-circle">❮</a>
     {% endif %}
 
     {% if forloop.last %}
-        <!-- if last slide, show first slide button -->
+      <!-- if last slide, show first slide button -->
       <a href="#slide{{ forloop.revcounter }}" class="btn btn-circle">❯</a>
-      {% else %}
+    {% else %}
       <!-- if not last show next slide button -->
-      <a href="#slide{{ forloop.counter - 1 }}" class="btn btn-circle">❯</a>
+      <a href="#slide{{ forloop.counter|add:1 }}" class="btn btn-circle">❯</a>
     {% endif %}
   </div>
   <p class="insert-image-card">{{ obj.photo.name }}</p>

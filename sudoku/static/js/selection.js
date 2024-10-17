@@ -7,7 +7,7 @@ function activateTab(e) {
     e.target.classList.add('tab-active');
 }
 
-// function to the drag and drop feature
+// function for the drag and drop feature
 function dragOverDropZone(e) {
     e.preventDefault();
     e.target.classList.add('drag-over');
@@ -29,3 +29,15 @@ function dropOnDropZone(e) {
         fileInputElement.dispatchEvent(new Event('change'));
     }
 }
+
+// function related to reloading existing image (commented out properly)
+function updateHrefNextBtn(e) {
+    let hrefUrl = e.target.getAttribute('nexturl')
+
+    let button = document.getElementById('next-btn');
+    if (button) {
+        button.setAttribute('href', hrefUrl);
+    }
+}
+
+

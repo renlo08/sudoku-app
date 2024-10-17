@@ -5,6 +5,7 @@ import json
 from os import path
 
 import cv2
+from django.urls import reverse
 import numpy as np
 from PIL import Image
 from django.core.files.base import ContentFile
@@ -18,6 +19,9 @@ class Sudoku(models.Model):
     id = models.AutoField(primary_key=True)
     photo = models.ImageField(upload_to='sudoku_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def get_extraction_url(self):
+        return reverse("app:extract-board", kwargs={"pk": self.pk})
 
     def get_photo_name(self) -> str:
         return self.photo.name

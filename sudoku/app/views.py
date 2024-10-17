@@ -20,10 +20,6 @@ def get_started_view(request):
             render(request, 'app/get-started.html', {'form': form})
     return render(request, 'app/get-started.html', {'form': form})
 
-def load_existing_image_view(request):
-    obj = Sudoku.objects.all()
-    return render(request, 'app/reload-container.html', {'object': obj})
-
 def add_upload_details_view(request):
     context = {}
     if request.htmx and request.method =="POST":
@@ -39,7 +35,16 @@ def add_image_view(request):
 
 def list_image_view(request):
     objects = Sudoku.objects.all()
-    return render(request, 'app/reload-container.html', {'objects': objects})
+
+    sudoku_list = list(objects)
+    objects_with_neighbors = [
+        (sudoku_list[i-1], sudoku_list[i], sudoku_list[(i+1) % len(sudoku_list)])
+        for i in range(len(sudoku_list))
+    ]
+    return render(request, 'app/reload-container.html', {'objects_with_neighbors': objects_with_neighbors, 'first_object': objects.first()})
+
+def get_next_button_view(request):
+    return render(request, 'app/partials/next-button.html', {'object': obj})
 
 def upload_view(request):
     if request.method == 'POST':
@@ -138,8 +143,7 @@ def display_constrast_view(request):
     figure_html = figure.to_html()
     return render(request, 'board/partials/draw.html', context={'figure': figure_html})
 
-
-def extract_board_view(request):
+def extract_board_view(request, pk=None):
     if request.method == 'GET':
         # Get the board cells from the database
         board_obj = SudokuBoard.objects.get(

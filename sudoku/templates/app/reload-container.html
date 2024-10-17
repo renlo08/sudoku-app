@@ -1,12 +1,16 @@
 <!-- section for loading an existing file -->
 <div class="upload-zone-title">
   <h2 class="text-2xl leading-tight">Charger une image existante</h2>
-  <p class="text-sm text-gray-500 px-2">Selectionner une image de grille sudoku</p>
+  <p class="text-sm text-gray-500 px-2">Faites défiler les grilles sudoku pour choisir l´image à charger.</p>
 </div>
+
 <div class="flex justify-center bg-white py-5 mx-5 rounded-lg border-2 border-secondary border-dashed">
-  <div class="carousel w-1/5">
-    {% for obj in objects %}
+  <div class="carousel w-96">
+    {% for prev_obj, obj, next_obj in objects_with_neighbors %}
       {% include 'app/partials/selection-card.html' %}
     {% endfor %}
   </div>
+</div>
+<div class="flex justify-end">
+  <a id="next-btn" href="{{ first_object.get_extraction_url }}" class="wizard-btn">Suivant</a>
 </div>

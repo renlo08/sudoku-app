@@ -1,6 +1,6 @@
 {% load custom_app_tags %}
 
-<div id="slide{{ forloop.counter }}" class="carousel-item relative w-full">
+<div id="slide{{ forloop.counter }}" class="carousel-item relative w-full" nexturl={{ obj.get_extraction_url }} onmouseleave="updateHrefNextBtn(event)">
   <img src="{{ obj.photo.url }}" alt="{{ obj.title }}" class="w-full" />
   <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
     <!-- define the slide button of the card -->
@@ -14,10 +14,10 @@
 
     {% if forloop.last %}
       <!-- if last slide, show first slide button -->
-      <a href="#slide{{ forloop.revcounter }}" class="btn btn-circle">❯</a>
+      <a href="#slide{{ forloop.revcounter }}" class="btn btn-circle" nexturl={{ next_obj.get_extraction_url }}>❯</a>
     {% else %}
       <!-- if not last show next slide button -->
-      <a href="#slide{{ forloop.counter|add:1 }}" class="btn btn-circle">❯</a>
+      <a href="#slide{{ forloop.counter|add:1 }}" class="btn btn-circle" nexturl={{ next_obj.get_extraction_url }}>❯</a>
     {% endif %}
   </div>
   <p class="insert-image-card">{{ obj.photo.name }}</p>

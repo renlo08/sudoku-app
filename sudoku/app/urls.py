@@ -11,13 +11,14 @@ urlpatterns = [
     path('',views.get_started_view, name='get-started'),
     path('upload/', views.upload_view, name='upload'),
     path('reload/', views.reload_view, name='reload'),
-    path('extract/', views.extract_board_view, name='extract-board'),
+    path('<int:pk>/extract/', views.extract_board_view, name='extract-board'),
 ]
 
 htmx_urlpatterns = [
     path('upload-details/', views.add_upload_details_view, name='hx-upload-details'),
     path('new-image/', views.add_image_view, name='hx-add-image'),
     path('list-images/', views.list_image_view, name='hx-list-images'),
+    path('next-button/', views.get_next_button_view, name='hx-next-btn'),
     path('display-original/', views.display_original_view,
          name='hx-display-original'),
     path('display-grayscale/', views.display_grayscale_view,

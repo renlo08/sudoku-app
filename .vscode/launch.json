@@ -5,13 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Django runserver",
+            "name": "Django",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/sudoku/manage.py",
             "args": ["runserver"],
             "django": true,
             "justMyCode": true,
-            "cwd": "${workspaceFolder}/sudoku"
+            "cwd": "${workspaceFolder}/sudoku",
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chrome",
+            "url": "http://localhost:8000/app/",
+            "webRoot": "${workspaceFolder}/sudoku",
         }
+    ],
+    "compounds": [{
+        "name": "Django/Web",
+        "configurations": ["Django", "Chrome"]
+        }
+    ]
 }

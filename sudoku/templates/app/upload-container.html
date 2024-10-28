@@ -16,11 +16,13 @@
           <p class="text-xs text-gray-400">Formats autorisés: PNG, JPG</p>
         </div>
         <div class="hidden">{{ form.photo }}</div>
-        <div class="m-4" id="file-details"></div>
+        <div class="m-4" id="file-details">
+          {% include 'app/partials/upload-details.html' %}
+        </div>
       </label>
     </div>
-    <input class="wizard-btn" value="Suivant" type="submit" onclick="document.getElementById('drop-zone').submit();"/>
     <div class="flex justify-end">
+      <input class="wizard-btn" value="Suivant" type="submit" onclick="document.getElementById('drop-zone').submit();"/>
     </div>
   </form>
 </div>

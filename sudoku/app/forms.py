@@ -12,6 +12,11 @@ class UploadForm(forms.ModelForm):
         widgets = {
             'photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'id': 'new-file'})
         }
+        error_messages = {
+            'photo': {
+            'required': 'Aucune image n\'a été sélectionnée',
+            }
+        }
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

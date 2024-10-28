@@ -17,7 +17,7 @@ def get_started_view(request):
         if form.is_valid():
             sudoku_obj = Sudoku(photo=request.FILES['photo'])
             sudoku_obj.save()
-            render(request, 'app/get-started.html', {'form': form})
+            return redirect('home')
     return render(request, 'app/get-started.html', {'form': form})
 
 def add_upload_details_view(request):
@@ -60,6 +60,7 @@ def upload_view(request):
             sudoku_obj.process_board()
 
         else:
+            
             request.session['uploadForm'] = form
     return redirect('home')
 

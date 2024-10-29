@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="flex-grow flex flex-col">
+    <div class="pt-4 border-t-2 flex justify-center bg-white">
+      <ul class="steps w-5/12 mb-4 ">
+        <li class="step">Selectionner</li>
+        <li class="step step-primary">Extraire</li>
+        <li class="step">Résoudre</li>
+      </ul>
+    </div>
+      {% block app_content %}
+        <p>Doit être remplacé par le contenu de l'application</p>
+      {% endblock %}
+  </div>
+{% endblock %}

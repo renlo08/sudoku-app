@@ -21,7 +21,7 @@ class Sudoku(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def get_extraction_url(self):
-        return reverse("app:extract-board", kwargs={"pk": self.pk})
+        return reverse("app:processing:home", kwargs={"pk": self.pk})
 
     def get_photo_name(self) -> str:
         return self.photo.name

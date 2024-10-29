@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_htmx',
     'app',
+    'processing',
     'django_browser_reload',
     'tailwind',
     'theme',

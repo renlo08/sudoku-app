@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -11,7 +11,7 @@ urlpatterns = [
     path('',views.get_started_view, name='get-started'),
     path('upload/', views.get_started_view, name='upload'),
     path('reload/', views.reload_view, name='reload'),
-    path('<int:pk>/extract/', views.extract_board_view, name='extract-board'),
+    path('extract/', include('processing.urls'), name='processing'),
 ]
 
 htmx_urlpatterns = [
